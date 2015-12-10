@@ -2,44 +2,20 @@ import {
   GraphQLString,
   GraphQLScalarType
 } from 'graphql';
-
 import { GraphQLError } from 'graphql/error';
 import { Kind } from 'graphql/language';
+import { Factory } from './factory';
 
-const regexFactory = function(options) {
-  const error = options.error || 'Query error: ' + options.name;
-  return new GraphQLScalarType({
-    name: options.name,
-    description: options.description,
-    serialize: value => {
-      return value;
-    },
-    parseValue: value => {
-      return value;
-    },
-    parseLiteral: ast => {
-      if (ast.kind !== Kind.STRING) {
-        throw new GraphQLError('Query error: Can only parse strings got a: ' + ast.kind, [ast]);
-      }
+const factory = new Factory();
 
-      var re = options.regex;
-      if(!re.test(ast.value)) {
-        throw new GraphQLError(error, [ast]);
-      }
-
-      return ast.value;
-    }
-  });
-}
-
-export const GraphQLEmail = regexFactory({
+export const GraphQLEmail = factory.getRegexScalar({
   name: 'Email',
   regex: /^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i,
   description:'The Email scalar type represents E-Mail addresses compliant to RFC 822.',
   error: 'Query error: Not a valid Email address'
 });
 
-export const GraphQLURL = regexFactory({
+export const GraphQLURL = factory.getRegexScalar({
     name: 'URL',
     // RegExp taken from https://gist.github.com/dperini/729294
     regex: new RegExp('^(?:(?:https?|ftp)://)(?:\\S+(?::\\S*)?@)?(?:(?!(?:10|127)(?:\\.\\d{1,3}){3})(?!(?:169\\.254|192\\.168)(?:\\.\\d{1,3}){2})(?!172\\.(?:1[6-9]|2\\d|3[0-1])(?:\\.\\d{1,3}){2})(?:[1-9]\\d?|1\\d\\d|2[01]\\d|22[0-3])(?:\\.(?:1?\\d{1,2}|2[0-4]\\d|25[0-5])){2}(?:\\.(?:[1-9]\\d?|1\\d\\d|2[0-4]\\d|25[0-4]))|(?:(?:[a-z\\u00a1-\\uffff0-9]-*)*[a-z\\u00a1-\\uffff0-9]+)(?:\\.(?:[a-z\\u00a1-\\uffff0-9]-*)*[a-z\\u00a1-\\uffff0-9]+)*(?:\\.(?:[a-z\\u00a1-\\uffff]{2,}))\\.?)(?::\\d{2,5})?(?:[/?#]\\S*)?$', 'i'),
