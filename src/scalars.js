@@ -1,10 +1,7 @@
-import {
-  GraphQLString,
-  GraphQLScalarType
-} from 'graphql';
 import { GraphQLError } from 'graphql/error';
 import { Kind } from 'graphql/language';
 import { Factory } from './factory';
+import { GraphQLCustomScalarType } from './types';
 
 const factory = new Factory();
 
@@ -24,46 +21,39 @@ export const GraphQLURL = factory.getRegexScalar({
 });
 
 var limitedStringCounter = 0;
-export class GraphQLLimitedString extends GraphQLScalarType {
+export class GraphQLLimitedString extends GraphQLCustomScalarType {
   constructor(min = 1, max, alphabet) {
+    const suffix = (limitedStringCounter++ > 0) ? limitedStringCounter : '';
+    const name = 'LimitedString' + suffix;
     var description = 'A limited string.';
     if(max) description += ' Has to be between ' + min + ' and ' + max + ' characters long.';
     else description += ' Has to be at least ' + min + 'characters long.';
     if(alphabet) description += ' May only contain the following characters: ' + alphabet;
 
-    const suffix = (limitedStringCounter++ > 0) ? limitedStringCounter : '';
-    super({
-      name: 'LimitedString' + suffix,
-      description: description,
-      serialize: value => {
-        return value;
-      },
-      parseValue: value => {
-        return value;
-      },
-      parseLiteral: ast => {
-        if (ast.kind !== Kind.STRING) {
-          throw new GraphQLError('Query error: Can only parse strings got a: ' + ast.kind, [ast]);
-        }
+    const validator = function(ast) {
+      if (ast.kind !== Kind.STRING) {
+        throw new GraphQLError('Query error: Can only parse strings got a: ' + ast.kind, [ast]);
+      }
 
-        if(ast.value.length < min) {
-          throw new GraphQLError('Query error: String not long enough', [ast]);
-        }
+      if(ast.value.length < min) {
+        throw new GraphQLError('Query error: String not long enough', [ast]);
+      }
 
-        if(max && ast.value.length > max) {
-          throw new GraphQLError('Query error: String too long', [ast]);
-        }
+      if(max && ast.value.length > max) {
+        throw new GraphQLError('Query error: String too long', [ast]);
+      }
 
-        if(alphabet) {
-          for(var char of ast.value) {
-            if(alphabet.indexOf(char) < 0) {
-              throw new GraphQLError('Query error: Invalid character found', [ast]);
-            }
+      if(alphabet) {
+        for(var char of ast.value) {
+          if(alphabet.indexOf(char) < 0) {
+            throw new GraphQLError('Query error: Invalid character found', [ast]);
           }
         }
-
-        return ast.value;
       }
-    });
+
+      return ast.value;
+    }
+
+    super(name, description, validator);
   }
 };
