@@ -78,7 +78,13 @@ export class GraphQLLimitedString extends GraphQLScalarType {
           throw new GraphQLError('Query error: String too long', [ast]);
         }
 
-        // check for valid characters
+        if(alphabet) {
+          for(var char of ast.value) {
+            if(alphabet.indexOf(char) < 0) {
+              throw new GraphQLError('Query error: Invalid character found', [ast]);
+            }
+          }
+        }
 
         return ast.value;
       }
