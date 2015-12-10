@@ -6,7 +6,8 @@ import {
 } from 'graphql';
 import {
   GraphQLEmail,
-  GraphQLURL
+  GraphQLURL,
+  GraphQLLimitedString
 } from '../lib/scalars';
 import test from 'tape';
 
@@ -31,7 +32,16 @@ const schema = new GraphQLSchema({
         resolve: (root, {item}) => {
           return item;
         }
-      }
+      },
+      limitedStringDefault: {
+        type: GraphQLString,
+        args: {
+          item: { type: new GraphQLLimitedString() }
+        },
+        resolve: (root, {item}) => {
+          return item;
+        }
+      },
     }
   })
 });
@@ -204,6 +214,41 @@ test('GraphQLURL', function(t) {
         }
         else {
           t.fail('invalid URL recognized as valid:' + item);
+        }
+      });
+    })(item);
+  }
+});
+
+test('GraphQLLimitedString (default)', function(t) {
+  var valid = [
+    'a',
+    'aa',
+    'aaa1',
+    '1aaa'
+  ];
+
+  var invalid = [''];
+  t.plan(valid.length + invalid.length);
+
+  for(var item of valid) {
+    (function(item) {
+      var query = '{limitedStringDefault(item: "' + item + '")}';
+      graphql(schema, query).then(function(result) {
+
+      });
+    })(item);
+  }
+
+  for(var item of invalid) {
+    (function(item) {
+      var query = '{limitedStringDefault(item: "' + item + '")}';
+      graphql(schema, query).then(function(result) {
+        if(result.errors) {
+          t.equal(result.errors[0].message, 'Query error: String not long enough', 'invalid LimitedString recognized');
+        }
+        else {
+          t.fail('invalid LimitedString recognized as valid:' + item);
         }
       });
     })(item);
