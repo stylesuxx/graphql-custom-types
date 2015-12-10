@@ -47,6 +47,7 @@ export const GraphQLURL = regexFactory({
     error: 'Query error: Not a valid URL'
 });
 
+var limitedStringCounter = 0;
 export class GraphQLLimitedString extends GraphQLScalarType {
   constructor(min = 1, max, alphabet) {
     var description = 'A limited string.';
@@ -54,8 +55,9 @@ export class GraphQLLimitedString extends GraphQLScalarType {
     else description += ' Has to be at least ' + min + 'characters long.';
     if(alphabet) description += ' May only contain the following characters: ' + alphabet;
 
+    const suffix = (limitedStringCounter++ > 0) ? limitedStringCounter : '';
     super({
-      name: 'LimitedString',
+      name: 'LimitedString' + suffix,
       description: description,
       serialize: value => {
         return value;
