@@ -51,6 +51,15 @@ const schema = new GraphQLSchema({
           return item;
         }
       },
+      limitedStringAlphabet: {
+        type: GraphQLString,
+        args: {
+          item: { type: new GraphQLLimitedString(3, 10, 'abc123') }
+        },
+        resolve: (root, {item}) => {
+          return item;
+        }
+      },
     }
   })
 });
@@ -305,6 +314,55 @@ test('GraphQLLimitedString (min = 3, max = 10)', function(t) {
   for(var item of invalid) {
     (function(item) {
       var query = '{limitedStringMinMax(item: "' + item + '")}';
+      graphql(schema, query).then(function(result) {
+        if(result.errors) {
+          t.ok(result.errors[0].message, 'invalid LimitedString recognized');
+        }
+        else {
+          t.fail('invalid LimitedString recognized as valid: ' + item);
+        }
+      });
+    })(item);
+  }
+});
+
+test('GraphQLLimitedString (min = 3, max = 10, alphabet = "abc123")', function(t) {
+  var valid = [
+    'aaa',
+    'abc',
+    'abc123',
+    '1231231231',
+    'aaaaabbbbb',
+    '33333ccc22'
+  ];
+
+  var invalid = [
+    '',
+    'a',
+    'aa',
+    '01234567890',
+    'foobar23456'
+  ];
+
+  t.plan(valid.length + invalid.length);
+
+  for(var item of valid) {
+    (function(item) {
+      var query = '{limitedStringAlphabet(item: "' + item + '")}';
+      graphql(schema, query).then(function(result) {
+        if(result.data && result.data.limitedStringAlphabet) {
+          t.equal(result.data.limitedStringAlphabet, item, 'valid LimitedString recognized');
+        }
+        else {
+          t.fail('valid LimitedString recognized as invalid: ' + item);
+        }
+      });
+    })(item);
+  }
+
+  for(var item of invalid) {
+    (function(item) {
+      var query = '{limitedStringAlphabet(item: "' + item + '")}';
       graphql(schema, query).then(function(result) {
         if(result.errors) {
           t.ok(result.errors[0].message, 'invalid LimitedString recognized');
