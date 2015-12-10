@@ -2,7 +2,11 @@
 This is a collection of custom GraphQL types that I tend to reuse quite often so I packed them into a module.
 
 ## Available Types
+Let me give you an overview of the available types.
+
 ### Scalar
+The primitive types, aka everything that may be represented as a string.
+
 #### GraphQLEmail
 RFC 822 compliant E-Mail address
 
