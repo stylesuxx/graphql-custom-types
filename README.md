@@ -9,8 +9,8 @@ Let me give you an overview of the available types.
 ### Scalar
 The primitive types, aka everything that may be represented as a string.
 
-#### GraphQLEmail
-RFC 822 compliant E-Mail address
+* GraphQLEmail
+* GraphQLURL
 
 ## Installation
 ```Bash
