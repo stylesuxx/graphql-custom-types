@@ -64,6 +64,7 @@ test('GraphQLEmail', function(t) {
       var query = '{echo(email: "' + mail + '")}';
       graphql(schema, query).then(function(result) {
         if(result.errors) {
+          console.log(errors);
           t.pass('invalid address recognized');
         }
         else {
