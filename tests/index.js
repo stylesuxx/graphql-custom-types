@@ -4,20 +4,32 @@ import {
   GraphQLObjectType,
   GraphQLString
 } from 'graphql';
-import { GraphQLEmail } from '../lib/scalars';
+import {
+  GraphQLEmail,
+  GraphQLURL
+} from '../lib/scalars';
 import test from 'tape';
 
 const schema = new GraphQLSchema({
   query: new GraphQLObjectType({
     name: 'RootQueryType',
     fields: {
-      echo: {
+      email: {
         type: GraphQLString,
         args: {
-          email: { type: GraphQLEmail }
+          item: { type: GraphQLEmail }
         },
-        resolve: (root, {email}) => {
-          return email;
+        resolve: (root, {item}) => {
+          return item;
+        }
+      },
+      url: {
+        type: GraphQLString,
+        args: {
+          item: { type: GraphQLURL }
+        },
+        resolve: (root, {item}) => {
+          return item;
         }
       }
     }
@@ -59,31 +71,141 @@ test('GraphQLEmail', function(t) {
 
   t.plan(valid.length + invalid.length);
 
-  for(var mail of invalid) {
-    (function(mail) {
-      var query = '{echo(email: "' + mail + '")}';
+  for(var item of invalid) {
+    (function(item) {
+      var query = '{email(item: "' + item + '")}';
       graphql(schema, query).then(function(result) {
         if(result.errors) {
           t.equal(result.errors[0].message, 'Query error: Not a valid Email address', 'invalid address recognized');
         }
         else {
-          t.fail('invalid address recognized as valid:' + mail);
+          t.fail('invalid address recognized as valid:' + item);
         }
       });
-    })(mail);
+    })(item);
   }
 
-  for(var mail of valid) {
-    (function(mail) {
-      var query = '{echo(email: "' + mail + '")}';
+  for(var item of valid) {
+    (function(item) {
+      var query = '{email(item: "' + item + '")}';
       graphql(schema, query).then(function(result) {
-        if(result.data && result.data.echo) {
-          t.pass('valid address recognized');
+        if(result.data && result.data.email) {
+          t.equal(result.data.email, item, 'valid address recognized');
         }
         else {
-          t.fail('Did not recognize valid address: ' + mail);
+          t.fail('Did not recognize valid address: ' + item);
         }
       });
-    })(mail);
+    })(item);
+  }
+});
+
+test('GraphQLURL', function(t) {
+  const valid = [
+    'http://foo.com/blah_blah',
+    'http://foo.com/blah_blah/',
+    'http://foo.com/blah_blah_(wikipedia)',
+    'http://foo.com/blah_blah_(wikipedia)_(again)',
+    'http://www.example.com/wpstyle/?p=364',
+    'https://www.example.com/foo/?bar=baz&inga=42&quux',
+    'http://✪df.ws/123',
+    'http://userid:password@example.com:8080',
+    'http://userid:password@example.com:8080/',
+    'http://userid@example.com',
+    'http://userid@example.com/',
+    'http://userid@example.com:8080',
+    'http://userid@example.com:8080/',
+    'http://userid:password@example.com',
+    'http://userid:password@example.com/',
+    'http://142.42.1.1/',
+    'http://142.42.1.1:8080/',
+    'http://➡.ws/䨹',
+    'http://⌘.ws',
+    'http://⌘.ws/',
+    'http://foo.com/blah_(wikipedia)#cite-1',
+    'http://foo.com/blah_(wikipedia)_blah#cite-1',
+    'http://foo.com/unicode_(✪)_in_parens',
+    'http://foo.com/(something)?after=parens',
+    'http://☺.damowmow.com/',
+    'http://code.google.com/events/#&product=browser',
+    'http://j.mp',
+    'ftp://foo.bar/baz',
+    'http://foo.bar/?q=Test%20URL-encoded%20stuff',
+    'http://مثال.إختبار',
+    'http://例子.测试',
+    'http://उदाहरण.परीक्षा',
+    'http://-.~_!$&\'()*+,;=:%40:80%2f::::::@example.com',
+    'http://1337.net',
+    'http://a.b-c.de',
+    'http://223.255.255.254'
+  ];
+
+  const invalid = [
+    'http://',
+    'http://.',
+    'http://..',
+    'http://../',
+    'http://?',
+    'http://??',
+    'http://??/',
+    'http://#',
+    'http://##',
+    'http://##/',
+    'http://foo.bar?q=Spaces should be encoded',
+    '//',
+    '//a',
+    '///a',
+    '///',
+    'http:///a',
+    'foo.com',
+    'rdar://1234',
+    'h://test',
+    'http:// shouldfail.com',
+    ':// should fail',
+    'http://foo.bar/foo(bar)baz quux',
+    'ftps://foo.bar/',
+    'http://-error-.invalid/',
+    'http://-a.b.co',
+    'http://a.b-.co',
+    'http://0.0.0.0',
+    'http://10.1.1.0',
+    'http://10.1.1.255',
+    'http://224.1.1.1',
+    'http://1.1.1.1.1',
+    'http://123.123.123',
+    'http://3628126748',
+    'http://.www.foo.bar/',
+    'http://.www.foo.bar./',
+    'http://10.1.1.1'
+  ];
+
+  t.plan(valid.length + invalid.length);
+
+  for(var item of valid) {
+    (function(item) {
+      var query = '{url(item: "' + item + '")}';
+      graphql(schema, query).then(function(result) {
+        if(result.data && result.data.url) {
+          t.equal(result.data.url, item, 'valid URL recognized');
+        }
+        else {
+          t.fail('Did not recognize valid URL: ' + item);
+        }
+      });
+    })(item);
+  }
+
+  for(var item of invalid) {
+    (function(item) {
+      var query = '{url(item: "' + item + '")}';
+      graphql(schema, query).then(function(result) {
+        if(result.errors) {
+          t.equal(result.errors[0].message, 'Query error: Not a valid URL', 'invalid URL recognized');
+        }
+        else {
+          t.fail('invalid URL recognized as valid:' + item);
+        }
+      });
+    })(item);
   }
 });
