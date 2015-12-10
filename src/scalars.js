@@ -46,3 +46,48 @@ export const GraphQLURL = regexFactory({
     description:'The URL scalar type represents URL addresses.',
     error: 'Query error: Not a valid URL'
 });
+
+var limitedStringCounter = 0;
+export class GraphQLLimitedString extends GraphQLScalarType {
+  constructor(min = 1, max, alphabet) {
+    var description = 'A limited string.';
+    if(max) description += ' Has to be between ' + min + ' and ' + max + ' characters long.';
+    else description += ' Has to be at least ' + min + 'characters long.';
+    if(alphabet) description += ' May only contain the following characters: ' + alphabet;
+
+    const suffix = (limitedStringCounter++ > 0) ? limitedStringCounter : '';
+    super({
+      name: 'LimitedString' + suffix,
+      description: description,
+      serialize: value => {
+        return value;
+      },
+      parseValue: value => {
+        return value;
+      },
+      parseLiteral: ast => {
+        if (ast.kind !== Kind.STRING) {
+          throw new GraphQLError('Query error: Can only parse strings got a: ' + ast.kind, [ast]);
+        }
+
+        if(ast.value.length < min) {
+          throw new GraphQLError('Query error: String not long enough', [ast]);
+        }
+
+        if(max && ast.value.length > max) {
+          throw new GraphQLError('Query error: String too long', [ast]);
+        }
+
+        if(alphabet) {
+          for(var char of ast.value) {
+            if(alphabet.indexOf(char) < 0) {
+              throw new GraphQLError('Query error: Invalid character found', [ast]);
+            }
+          }
+        }
+
+        return ast.value;
+      }
+    });
+  }
+};

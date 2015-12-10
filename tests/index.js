@@ -6,7 +6,8 @@ import {
 } from 'graphql';
 import {
   GraphQLEmail,
-  GraphQLURL
+  GraphQLURL,
+  GraphQLLimitedString
 } from '../lib/scalars';
 import test from 'tape';
 
@@ -31,7 +32,34 @@ const schema = new GraphQLSchema({
         resolve: (root, {item}) => {
           return item;
         }
-      }
+      },
+      limitedStringDefault: {
+        type: GraphQLString,
+        args: {
+          item: { type: new GraphQLLimitedString() }
+        },
+        resolve: (root, {item}) => {
+          return item;
+        }
+      },
+      limitedStringMinMax: {
+        type: GraphQLString,
+        args: {
+          item: { type: new GraphQLLimitedString(3, 10) }
+        },
+        resolve: (root, {item}) => {
+          return item;
+        }
+      },
+      limitedStringAlphabet: {
+        type: GraphQLString,
+        args: {
+          item: { type: new GraphQLLimitedString(3, 10, 'abc123') }
+        },
+        resolve: (root, {item}) => {
+          return item;
+        }
+      },
     }
   })
 });
@@ -79,7 +107,7 @@ test('GraphQLEmail', function(t) {
           t.equal(result.errors[0].message, 'Query error: Not a valid Email address', 'invalid address recognized');
         }
         else {
-          t.fail('invalid address recognized as valid:' + item);
+          t.fail('invalid address recognized as valid: ' + item);
         }
       });
     })(item);
@@ -93,7 +121,7 @@ test('GraphQLEmail', function(t) {
           t.equal(result.data.email, item, 'valid address recognized');
         }
         else {
-          t.fail('Did not recognize valid address: ' + item);
+          t.fail('valid address recognized as invalid: ' + item);
         }
       });
     })(item);
@@ -189,7 +217,7 @@ test('GraphQLURL', function(t) {
           t.equal(result.data.url, item, 'valid URL recognized');
         }
         else {
-          t.fail('Did not recognize valid URL: ' + item);
+          t.fail('valid URL recognized as invalid: ' + item);
         }
       });
     })(item);
@@ -203,7 +231,146 @@ test('GraphQLURL', function(t) {
           t.equal(result.errors[0].message, 'Query error: Not a valid URL', 'invalid URL recognized');
         }
         else {
-          t.fail('invalid URL recognized as valid:' + item);
+          t.fail('invalid URL recognized as valid: ' + item);
+        }
+      });
+    })(item);
+  }
+});
+
+test('GraphQLLimitedString (default)', function(t) {
+  var valid = [
+    'a',
+    'aa',
+    'aaa1',
+    '1aaa'
+  ];
+
+  var invalid = [''];
+  t.plan(valid.length + invalid.length);
+
+  for(var item of valid) {
+    (function(item) {
+      var query = '{limitedStringDefault(item: "' + item + '")}';
+      graphql(schema, query).then(function(result) {
+        if(result.data && result.data.limitedStringDefault) {
+          t.equal(result.data.limitedStringDefault, item, 'valid LimitedString recognized');
+        }
+        else {
+          t.fail('valid LimitedString recognized as invalid: ' + item);
+        }
+      });
+    })(item);
+  }
+
+  for(var item of invalid) {
+    (function(item) {
+      var query = '{limitedStringDefault(item: "' + item + '")}';
+      graphql(schema, query).then(function(result) {
+        if(result.errors) {
+          t.equal(result.errors[0].message, 'Query error: String not long enough', 'invalid LimitedString recognized');
+        }
+        else {
+          t.fail('invalid LimitedString recognized as valid: ' + item);
+        }
+      });
+    })(item);
+  }
+});
+
+test('GraphQLLimitedString (min = 3, max = 10)', function(t) {
+  var valid = [
+    'foo',
+    'foobar',
+    'foo-bar',
+    'foobar23',
+    '123456789'
+  ];
+
+  var invalid = [
+    '',
+    'a',
+    'aa',
+    '01234567890',
+    'foobar23456'
+  ];
+
+  t.plan(valid.length + invalid.length);
+
+  for(var item of valid) {
+    (function(item) {
+      var query = '{limitedStringMinMax(item: "' + item + '")}';
+      graphql(schema, query).then(function(result) {
+        if(result.data && result.data.limitedStringMinMax) {
+          t.equal(result.data.limitedStringMinMax, item, 'valid LimitedString recognized');
+        }
+        else {
+          t.fail('valid LimitedString recognized as invalid: ' + item);
+        }
+      });
+    })(item);
+  }
+
+  for(var item of invalid) {
+    (function(item) {
+      var query = '{limitedStringMinMax(item: "' + item + '")}';
+      graphql(schema, query).then(function(result) {
+        if(result.errors) {
+          t.ok(result.errors[0].message, 'invalid LimitedString recognized');
+        }
+        else {
+          t.fail('invalid LimitedString recognized as valid: ' + item);
+        }
+      });
+    })(item);
+  }
+});
+
+test('GraphQLLimitedString (min = 3, max = 10, alphabet = "abc123")', function(t) {
+  var valid = [
+    'aaa',
+    'abc',
+    'abc123',
+    '1231231231',
+    'aaaaabbbbb',
+    '33333ccc22'
+  ];
+
+  var invalid = [
+    '',
+    'a',
+    'aa',
+    'dddd',
+    'abd1234',
+    '01234567890',
+    'foobar23456'
+  ];
+
+  t.plan(valid.length + invalid.length);
+
+  for(var item of valid) {
+    (function(item) {
+      var query = '{limitedStringAlphabet(item: "' + item + '")}';
+      graphql(schema, query).then(function(result) {
+        if(result.data && result.data.limitedStringAlphabet) {
+          t.equal(result.data.limitedStringAlphabet, item, 'valid LimitedString recognized');
+        }
+        else {
+          t.fail('valid LimitedString recognized as invalid: ' + item);
+        }
+      });
+    })(item);
+  }
+
+  for(var item of invalid) {
+    (function(item) {
+      var query = '{limitedStringAlphabet(item: "' + item + '")}';
+      graphql(schema, query).then(function(result) {
+        if(result.errors) {
+          t.ok(result.errors[0].message, 'invalid LimitedString recognized');
+        }
+        else {
+          t.fail('invalid LimitedString recognized as valid: ' + item);
         }
       });
     })(item);
