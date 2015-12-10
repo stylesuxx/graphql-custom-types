@@ -2,6 +2,7 @@
 
 ## [Unreleased]
 ### Added
+- Custom scalar factory
 - RegExp type factory
 - GraphQLURL
 - GraphQLLimitedString
