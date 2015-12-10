@@ -7,7 +7,7 @@ import { GraphQLError } from 'graphql/error';
 import { Kind } from 'graphql/language';
 
 const regexFactory = function(options) {
-  const error = error || 'Error with GraphQLScalarType' + options.name;
+  const error = options.error || 'Query error: ' + options.name;
   return new GraphQLScalarType({
     name: options.name,
     description: options.description,
