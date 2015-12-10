@@ -20,7 +20,11 @@ npm install graphql-custom-types
 
 ## Usage
 ```JavaScript
-import { GraphQLEmail } from 'graphql-custom-types';
+import {
+  GraphQLEmail,
+  GraphQLURL,
+  GraphQLLimitedString
+} from 'graphql-custom-types';
 ```
 
 And use it in your Schema as you would use any other type.
