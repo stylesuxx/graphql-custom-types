@@ -236,7 +236,7 @@ test('GraphQLLimitedString (default)', function(t) {
       var query = '{limitedStringDefault(item: "' + item + '")}';
       graphql(schema, query).then(function(result) {
         if(result.data && result.data.limitedStringDefault) {
-          t.equal(result.data.LimitedString, item, 'valid LimitedString recognized');
+          t.equal(result.data.limitedStringDefault, item, 'valid LimitedString recognized');
         }
         else {
           t.fail('valid LimitedString recognized as invalid:' + item);
