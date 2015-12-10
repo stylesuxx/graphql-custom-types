@@ -4,7 +4,7 @@ import {
   GraphQLObjectType,
   GraphQLString
 } from 'graphql';
-import { GraphQLEmail } from '../lib/scalar';
+import { GraphQLEmail } from '../lib/scalars';
 import test from 'tape';
 
 const schema = new GraphQLSchema({
