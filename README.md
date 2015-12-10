@@ -7,7 +7,7 @@
 Let me give you an overview of the available types. If you need more detail about how to use them, check the tests.
 
 ### Scalar
-The primitive types, aka everything that may be represented as a string. The once with parameters you need to instantiate with *new* and pass according parameters, the others may be used as are.
+The primitive types, aka everything that may be represented as a string. The ones with parameters you need to instantiate with *new* and pass according parameters, the others may be used as are.
 
 * GraphQLEmail
 * GraphQLURL
