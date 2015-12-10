@@ -98,7 +98,7 @@ test('GraphQLEmail', function(t) {
           t.equal(result.errors[0].message, 'Query error: Not a valid Email address', 'invalid address recognized');
         }
         else {
-          t.fail('invalid address recognized as valid:' + item);
+          t.fail('invalid address recognized as valid: ' + item);
         }
       });
     })(item);
@@ -222,7 +222,7 @@ test('GraphQLURL', function(t) {
           t.equal(result.errors[0].message, 'Query error: Not a valid URL', 'invalid URL recognized');
         }
         else {
-          t.fail('invalid URL recognized as valid:' + item);
+          t.fail('invalid URL recognized as valid: ' + item);
         }
       });
     })(item);
@@ -248,7 +248,7 @@ test('GraphQLLimitedString (default)', function(t) {
           t.equal(result.data.limitedStringDefault, item, 'valid LimitedString recognized');
         }
         else {
-          t.fail('valid LimitedString recognized as invalid:' + item);
+          t.fail('valid LimitedString recognized as invalid: ' + item);
         }
       });
     })(item);
@@ -262,7 +262,7 @@ test('GraphQLLimitedString (default)', function(t) {
           t.equal(result.errors[0].message, 'Query error: String not long enough', 'invalid LimitedString recognized');
         }
         else {
-          t.fail('invalid LimitedString recognized as valid:' + item);
+          t.fail('invalid LimitedString recognized as valid: ' + item);
         }
       });
     })(item);
@@ -282,7 +282,7 @@ test('GraphQLLimitedString (min = 3, max = 10)', function(t) {
     '',
     'a',
     'aa',
-    '0123456789',
+    '01234567890',
     'foobar23456'
   ];
 
@@ -296,7 +296,7 @@ test('GraphQLLimitedString (min = 3, max = 10)', function(t) {
           t.equal(result.data.limitedStringMinMax, item, 'valid LimitedString recognized');
         }
         else {
-          t.fail('valid LimitedString recognized as invalid:' + item);
+          t.fail('valid LimitedString recognized as invalid: ' + item);
         }
       });
     })(item);
@@ -310,7 +310,7 @@ test('GraphQLLimitedString (min = 3, max = 10)', function(t) {
           t.ok(result.errors[0].message, 'invalid LimitedString recognized');
         }
         else {
-          t.fail('invalid LimitedString recognized as valid:' + item);
+          t.fail('invalid LimitedString recognized as valid: ' + item);
         }
       });
     })(item);
