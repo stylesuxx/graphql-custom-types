@@ -1,5 +1,6 @@
 {
   "name": "graphql-custom-types",
+  "repository": "stylesuxx/graphql-custom-types",
   "version": "0.0.0",
   "description": "Collection of custom graphql types.",
   "author": "Chris Landa <stylesuxx@gmail.com>",
@@ -23,5 +24,12 @@
   },
   "dependencies": {
     "graphql": "^0.4.14"
-  }
+  },
+  "keywords": [
+    "es6",
+    "es2015",
+    "GraphQL",
+    "express-graphql",
+    "GraphQL types"
+  ]
 }
