@@ -103,7 +103,7 @@ test('GraphQLEmail', function(t) {
           t.equal(result.data.email, item, 'valid address recognized');
         }
         else {
-          t.fail('Did not recognize valid address: ' + item);
+          t.fail('valid address recognized as invalid: ' + item);
         }
       });
     })(item);
@@ -199,7 +199,7 @@ test('GraphQLURL', function(t) {
           t.equal(result.data.url, item, 'valid URL recognized');
         }
         else {
-          t.fail('Did not recognize valid URL: ' + item);
+          t.fail('valid URL recognized as invalid: ' + item);
         }
       });
     })(item);
@@ -235,7 +235,12 @@ test('GraphQLLimitedString (default)', function(t) {
     (function(item) {
       var query = '{limitedStringDefault(item: "' + item + '")}';
       graphql(schema, query).then(function(result) {
-
+        if(results.data && results.data.limitedStringDefault) {
+          t.equal(result.data.LimitedString, item, 'valid LimitedString recognized');
+        }
+        else {
+          t.fail('valid LimitedString recognized as invalid:' + item);
+        }
       });
     })(item);
   }
