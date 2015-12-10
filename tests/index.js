@@ -42,6 +42,15 @@ const schema = new GraphQLSchema({
           return item;
         }
       },
+      limitedStringMinMax: {
+        type: GraphQLString,
+        args: {
+          item: { type: new GraphQLLimitedString(3, 10) }
+        },
+        resolve: (root, {item}) => {
+          return item;
+        }
+      },
     }
   })
 });
@@ -251,6 +260,54 @@ test('GraphQLLimitedString (default)', function(t) {
       graphql(schema, query).then(function(result) {
         if(result.errors) {
           t.equal(result.errors[0].message, 'Query error: String not long enough', 'invalid LimitedString recognized');
+        }
+        else {
+          t.fail('invalid LimitedString recognized as valid:' + item);
+        }
+      });
+    })(item);
+  }
+});
+
+test('GraphQLLimitedString (min = 3, max = 10)', function(t) {
+  var valid = [
+    'foo',
+    'foobar',
+    'foo-bar',
+    'foobar23',
+    '123456789'
+  ];
+
+  var invalid = [
+    '',
+    'a',
+    'aa',
+    '0123456789',
+    'foobar23456'
+  ];
+
+  t.plan(valid.length + invalid.length);
+
+  for(var item of valid) {
+    (function(item) {
+      var query = '{limitedStringMinMax(item: "' + item + '")}';
+      graphql(schema, query).then(function(result) {
+        if(result.data && result.data.limitedStringDefault) {
+          t.equal(result.data.limitedStringDefault, item, 'valid LimitedString recognized');
+        }
+        else {
+          t.fail('valid LimitedString recognized as invalid:' + item);
+        }
+      });
+    })(item);
+  }
+
+  for(var item of invalid) {
+    (function(item) {
+      var query = '{limitedStringMinMax(item: "' + item + '")}';
+      graphql(schema, query).then(function(result) {
+        if(result.errors) {
+          t.ok(result.errors[0].message, 'invalid LimitedString recognized');
         }
         else {
           t.fail('invalid LimitedString recognized as valid:' + item);
