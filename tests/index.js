@@ -340,6 +340,8 @@ test('GraphQLLimitedString (min = 3, max = 10, alphabet = "abc123")', function(t
     '',
     'a',
     'aa',
+    'dddd',
+    'abd1234',
     '01234567890',
     'foobar23456'
   ];
