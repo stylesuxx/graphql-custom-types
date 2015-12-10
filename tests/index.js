@@ -292,8 +292,8 @@ test('GraphQLLimitedString (min = 3, max = 10)', function(t) {
     (function(item) {
       var query = '{limitedStringMinMax(item: "' + item + '")}';
       graphql(schema, query).then(function(result) {
-        if(result.data && result.data.limitedStringDefault) {
-          t.equal(result.data.limitedStringDefault, item, 'valid LimitedString recognized');
+        if(result.data && result.data.limitedStringMinMax) {
+          t.equal(result.data.limitedStringMinMax, item, 'valid LimitedString recognized');
         }
         else {
           t.fail('valid LimitedString recognized as invalid:' + item);
