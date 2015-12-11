@@ -321,7 +321,9 @@ test('GraphQLPasswort (alphaNumeric)', function(t) {
     'a1c',
     'abc123',
     '123abc1231',
-    '33333ccc22'
+    '33333ccc22',
+    '33333ccc22C',
+    '333§ccc22'
   ];
 
   var invalid = [
@@ -372,7 +374,9 @@ test('GraphQLPasswort (mixedCase)', function(t) {
     'a1C',
     'aBc123',
     '123Abc1231',
-    '33333cCc22'
+    '33333cCc22',
+    '33333ccc22C',
+    '333§ccC22'
   ];
 
   var invalid = [
