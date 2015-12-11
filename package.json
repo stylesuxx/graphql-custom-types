@@ -1,10 +1,11 @@
 {
   "name": "graphql-custom-types",
   "repository": "stylesuxx/graphql-custom-types",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Collection of custom graphql types like Email, URL, password and many more",
   "author": "Chris Landa <stylesuxx@gmail.com>",
   "license": "MIT",
+  "main": "lib/index.js",
   "scripts": {
     "clean": "rm -rf lib",
     "build": "npm run clean && ./node_modules/.bin/babel src --out-dir lib",
