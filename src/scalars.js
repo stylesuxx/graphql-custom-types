@@ -46,12 +46,9 @@ const alphabetValidator = function(ast, alphabet) {
 
 const complexityValidator = function(ast, options) {
   const complexity = options || {};
-  const alhpaNumericRe = /^(?=.*[0-9])(?=.*[a-zA-Z])([a-zA-Z0-9]+)$/;
-  const mixedCaseRe = /^(?=.*[a-z])(?=.*[A-Z])([a-zA-Z0-9]+)$/;
-
-  /*
-    specialChars: true
-  */
+  const alhpaNumericRe = /^(?=.*[0-9])(?=.*[a-zA-Z])(.+)$/;
+  const mixedCaseRe = /^(?=.*[a-z])(?=.*[A-Z])(.+)$/;
+  const specialCharsRe = /^(?=.*[^a-zA-Z0-9])(.+)$/;
 
   if(complexity.alphaNumeric && !alhpaNumericRe.test(ast.value)) {
     throw new GraphQLError('Query error: String must contain at least one number and one letter', [ast]);
@@ -60,7 +57,10 @@ const complexityValidator = function(ast, options) {
   if(complexity.mixedCase && !mixedCaseRe.test(ast.value)) {
     throw new GraphQLError('Query error: String must contain at least one uper and one lower case letter', [ast]);
   }
-  // Check special Chars
+
+  if(complexity.specialChars && !specialCharsRe.test(ast.value)) {
+    throw new GraphQLError('Query error: String must contain at least one special character', [ast]);
+  }
 };
 
 var limitedStringCounter = 0;
