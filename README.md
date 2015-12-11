@@ -4,7 +4,7 @@
 > This is a collection of custom GraphQL types that I tend to reuse quite often so I packed them into a module.
 
 ## Available Types
-Let me give you an overview of the available types. If you need more detail about how to use them, check *schema.ja* in the tests folder.
+Let me give you an overview of the available types. If you need more detail about how to use them, check *schema.js* in the tests folder.
 
 ### Scalar
 The primitive types, aka everything that may be represented as a string. The ones with parameters you need to instantiate with *new* and pass according parameters, the others may be used as are.
