@@ -44,6 +44,18 @@ const alphabetValidator = function(ast, alphabet) {
   }
 };
 
+const complexityValidator = function(ast, options) {
+  var complexity = {
+    alphaNumeric: true,
+    mixedCase: true,
+    specialChars: true
+  };
+
+  // Check alphaNumeric
+  // Check case
+  // Check special Chars
+};
+
 var limitedStringCounter = 0;
 export class GraphQLLimitedString extends GraphQLCustomScalarType {
   constructor(min = 1, max, alphabet) {
@@ -57,7 +69,37 @@ export class GraphQLLimitedString extends GraphQLCustomScalarType {
     const validator = function(ast) {
       stringValidator(ast);
       lengthValidator(ast, min, max);
+
       if(alphabet) alphabetValidator(ast, alphabet);
+
+      return ast.value;
+    }
+
+    super(name, description, validator);
+  }
+};
+
+var passwordCounter = 0;
+export class GraphQLPassword extends GraphQLCustomScalarType {
+  constructor(min = 1, max, alphabet, complexity) {
+    const suffix = (passwordCounter++ > 0) ? passwordCounter : '';
+    const name = 'Password' + suffix;
+    var description = 'A password string.';
+    if(max) description += ' Has to be between ' + min + ' and ' + max + ' characters long.';
+    else description += ' Has to be at least ' + min + 'characters long.';
+    if(alphabet) description += ' May only contain the following characters: ' + alphabet;
+    if(complexity) {
+      if(complexity.alphaNumeric) description += ' Has to be alpha numeric.';
+      if(complexity.mixedCase) description += ' Has to be mixed case.';
+      if(complexity.specialChars) description += ' Has to contain special characters';
+    }
+
+    const validator = function(ast) {
+      stringValidator(ast);
+      lengthValidator(ast, min, max);
+
+      if(alphabet) alphabetValidator(ast, alphabet);
+      if(complexity) (ast, complexity);
 
       return ast.value;
     }
