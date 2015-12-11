@@ -11,6 +11,7 @@ The primitive types, aka everything that may be represented as a string. The one
 
 * GraphQLEmail
 * GraphQLURL
+* GraphQLDateTime
 * GraphQLLimitedString(min, max, alphabet)
 * GraphQLPassword(min, max, alphabet, complexity)
 
@@ -33,6 +34,7 @@ npm install graphql-custom-types --save
 import {
   GraphQLEmail,
   GraphQLURL,
+  GraphQLDateTime,
   GraphQLLimitedString,
   GraphQLPassword
 } from 'graphql-custom-types';
