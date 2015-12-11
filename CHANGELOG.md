@@ -1,6 +1,8 @@
 # Changelog
 
 ## [Unreleased]
+
+## [0.1.0] - 2015-12-11
 ### Added
 - Custom scalar factory
 - RegExp type factory
