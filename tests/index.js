@@ -70,6 +70,15 @@ const schema = new GraphQLSchema({
           return item;
         }
       },
+      passwordMixedCase: {
+        type: GraphQLString,
+        args: {
+          item: { type: new GraphQLPassword(null, null, null, { mixedCase: true })}
+        },
+        resolve: (root, {item}) => {
+          return item;
+        }
+      },
     }
   })
 });
@@ -426,6 +435,60 @@ test('GraphQLPasswort (alphaNumeric)', function(t) {
   for(var item of invalid) {
     (function(item) {
       var query = '{password(item: "' + item + '")}';
+      graphql(schema, query).then(function(result) {
+        if(result.errors) {
+          t.ok(result.errors[0].message, 'invalid Password recognized');
+        }
+        else {
+          t.fail('invalid Password recognized as valid: ' + item);
+        }
+      });
+    })(item);
+  }
+});
+
+test('GraphQLPasswort (mixedCase)', function(t) {
+  var valid = [
+    'aA',
+    'a1C',
+    'aBc123',
+    '123Abc1231',
+    '33333cCc22'
+  ];
+
+  var invalid = [
+    '',
+    'a',
+    'aa',
+    'dddd',
+    'aaaaabbbbb',
+    '1',
+    '1234',
+    '1234567890',
+    '1a',
+    '123aaaa',
+    'foo23bar'
+  ];
+
+  t.plan(valid.length + invalid.length);
+
+  for(var item of valid) {
+    (function(item) {
+      var query = '{passwordMixedCase(item: "' + item + '")}';
+      graphql(schema, query).then(function(result) {
+        if(result.data && result.data.passwordMixedCase) {
+          t.equal(result.data.passwordMixedCase, item, 'valid Password recognized');
+        }
+        else {
+          t.fail('valid Password recognized as invalid: ' + item);
+        }
+      });
+    })(item);
+  }
+
+  for(var item of invalid) {
+    (function(item) {
+      var query = '{passwordMixedCase(item: "' + item + '")}';
       graphql(schema, query).then(function(result) {
         if(result.errors) {
           t.ok(result.errors[0].message, 'invalid Password recognized');
