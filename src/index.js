@@ -2,12 +2,14 @@ import {
   GraphQLEmail,
   GraphQLURL,
   GraphQLLimitedString,
-  GraphQLPassword
+  GraphQLPassword,
+  GraphQLDateTime
 } from './scalars';
 
 module.exports = {
   GraphQLEmail,
   GraphQLURL,
   GraphQLLimitedString,
-  GraphQLPassword
+  GraphQLPassword,
+  GraphQLDateTime
 }
