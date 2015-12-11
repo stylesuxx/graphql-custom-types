@@ -1,6 +1,8 @@
 # Changelog
 
 ## [Unreleased]
+
+## [0.2.0] - 2015-12-12
 ### Added
 - GraphQLDateTime
 
