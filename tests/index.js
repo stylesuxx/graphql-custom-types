@@ -393,7 +393,6 @@ test('GraphQLPasswort (alphaNumeric)', function(t) {
     'a1c',
     'abc123',
     '123abc1231',
-    'aaaaabbbbb',
     '33333ccc22'
   ];
 
@@ -402,6 +401,7 @@ test('GraphQLPasswort (alphaNumeric)', function(t) {
     'a',
     'aa',
     'dddd',
+    'aaaaabbbbb',
     '1',
     '1234',
     '1234567890'
