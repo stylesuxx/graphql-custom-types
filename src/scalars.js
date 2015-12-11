@@ -70,7 +70,7 @@ export class GraphQLLimitedString extends GraphQLCustomScalarType {
     const name = 'LimitedString' + suffix;
     var description = 'A limited string.';
     if(max) description += ' Has to be between ' + min + ' and ' + max + ' characters long.';
-    else description += ' Has to be at least ' + min + 'characters long.';
+    else description += ' Has to be at least ' + min + ' characters long.';
     if(alphabet) description += ' May only contain the following characters: ' + alphabet;
 
     const validator = function(ast) {
@@ -93,12 +93,12 @@ export class GraphQLPassword extends GraphQLCustomScalarType {
     const name = 'Password' + suffix;
     var description = 'A password string.';
     if(max) description += ' Has to be between ' + min + ' and ' + max + ' characters long.';
-    else description += ' Has to be at least ' + min + 'characters long.';
+    else description += ' Has to be at least ' + min + ' characters long.';
     if(alphabet) description += ' May only contain the following characters: ' + alphabet;
     if(complexity) {
       if(complexity.alphaNumeric) description += ' Has to be alpha numeric.';
       if(complexity.mixedCase) description += ' Has to be mixed case.';
-      if(complexity.specialChars) description += ' Has to contain special characters';
+      if(complexity.specialChars) description += ' Has to contain special characters.';
     }
 
     const validator = function(ast) {
