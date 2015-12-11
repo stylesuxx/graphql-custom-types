@@ -78,6 +78,15 @@ export const schema = new GraphQLSchema({
           return item;
         }
       },
+      passwordSpecialChars: {
+        type: GraphQLString,
+        args: {
+          item: { type: new GraphQLPassword(null, null, null, { specialChars: true })}
+        },
+        resolve: (root, {item}) => {
+          return item;
+        }
+      },
     }
   })
 });

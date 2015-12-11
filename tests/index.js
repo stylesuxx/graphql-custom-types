@@ -419,3 +419,58 @@ test('GraphQLPasswort (mixedCase)', function(t) {
     })(item);
   }
 });
+
+test('GraphQLPasswort (specialChars)', function(t) {
+  var valid = [
+    'aÄ',
+    'a1*',
+    'a(c123',
+    '1%3Abc1231',
+    '33333#Cc22',
+    '!1'
+  ];
+
+  var invalid = [
+    '',
+    'a',
+    'aa',
+    'dddd',
+    'aaaaabbbbb',
+    '1',
+    '1234',
+    '1234567890',
+    '1a',
+    '123aaaa',
+    'foo23bar'
+  ];
+
+  t.plan(valid.length + invalid.length);
+
+  for(var item of valid) {
+    (function(item) {
+      var query = '{passwordSpecialChars(item: "' + item + '")}';
+      graphql(schema, query).then(function(result) {
+        if(result.data && result.data.passwordSpecialChars) {
+          t.equal(result.data.passwordSpecialChars, item, 'valid Password recognized');
+        }
+        else {
+          t.fail('valid Password recognized as invalid: ' + item);
+        }
+      });
+    })(item);
+  }
+
+  for(var item of invalid) {
+    (function(item) {
+      var query = '{passwordSpecialChars(item: "' + item + '")}';
+      graphql(schema, query).then(function(result) {
+        if(result.errors) {
+          t.ok(result.errors[0].message, 'invalid Password recognized');
+        }
+        else {
+          t.fail('invalid Password recognized as valid: ' + item);
+        }
+      });
+    })(item);
+  }
+});
