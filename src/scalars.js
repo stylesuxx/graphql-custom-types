@@ -47,18 +47,19 @@ const alphabetValidator = function(ast, alphabet) {
 const complexityValidator = function(ast, options) {
   const complexity = options || {};
   const alhpaNumericRe = /^(?=.*[0-9])(?=.*[a-zA-Z])([a-zA-Z0-9]+)$/;
+  const mixedCaseRe = /^(?=.*[a-z])(?=.*[A-Z])([a-zA-Z0-9]+)$/;
 
   /*
-    alphaNumeric: true,
-    mixedCase: true,
     specialChars: true
   */
 
-  // Check alphaNumeric
   if(complexity.alphaNumeric && !alhpaNumericRe.test(ast.value)) {
     throw new GraphQLError('Query error: String must contain at least one number and one letter', [ast]);
   }
-  // Check case
+
+  if(complexity.mixedCase && !mixedCaseRe.test(ast.value)) {
+    throw new GraphQLError('Query error: String must contain at least one uper and one lower case letter', [ast]);
+  }
   // Check special Chars
 };
 
