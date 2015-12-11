@@ -431,7 +431,8 @@ test('GraphQLPasswort (specialChars)', function(t) {
     'a(c123',
     '1%3Abc1231',
     '33333#Cc22',
-    '!1'
+    '!1',
+    '!#!§$%&/()'
   ];
 
   var invalid = [
@@ -467,6 +468,65 @@ test('GraphQLPasswort (specialChars)', function(t) {
   for(var item of invalid) {
     (function(item) {
       var query = '{passwordSpecialChars(item: "' + item + '")}';
+      graphql(schema, query).then(function(result) {
+        if(result.errors) {
+          t.ok(result.errors[0].message, 'invalid Password recognized');
+        }
+        else {
+          t.fail('invalid Password recognized as valid: ' + item);
+        }
+      });
+    })(item);
+  }
+});
+
+test('GraphQLPasswort (all)', function(t) {
+  var valid = [
+    'a1!B',
+    'b2§A3!',
+    '!!A1b'
+  ];
+
+  var invalid = [
+    '',
+    'a',
+    'aa',
+    'dddd',
+    'aaaaabbbbb',
+    '1',
+    '1234',
+    '1234567890',
+    '1a',
+    '123aaaa',
+    'foo23bar',
+    'aÄ',
+    'a1*',
+    'a(c123',
+    '1%3Abc1231',
+    '33333#Cc22',
+    '!1'
+  ];
+
+  t.plan(valid.length + invalid.length);
+
+  for(var item of valid) {
+    (function(item) {
+      var query = '{passwordAll(item: "' + item + '")}';
+      graphql(schema, query).then(function(result) {
+        if(result.data && result.data.passwordAll) {
+          t.equal(result.data.passwordAll, item, 'valid Password recognized');
+        }
+        else {
+          console.log(result);
+          t.fail('valid Password recognized as invalid: ' + item);
+        }
+      });
+    })(item);
+  }
+
+  for(var item of invalid) {
+    (function(item) {
+      var query = '{passwordAll(item: "' + item + '")}';
       graphql(schema, query).then(function(result) {
         if(result.errors) {
           t.ok(result.errors[0].message, 'invalid Password recognized');

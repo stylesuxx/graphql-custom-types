@@ -87,6 +87,15 @@ export const schema = new GraphQLSchema({
           return item;
         }
       },
+      passwordAll: {
+        type: GraphQLString,
+        args: {
+          item: { type: new GraphQLPassword(3, 6, 'abcABC123!"§', { specialChars: true, mixedCase: true, alphaNumeric: true })}
+        },
+        resolve: (root, {item}) => {
+          return item;
+        }
+      },
     }
   })
 });
