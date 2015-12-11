@@ -4,7 +4,7 @@
 > This is a collection of custom GraphQL types that I tend to reuse quite often so I packed them into a module.
 
 ## Available Types
-Let me give you an overview of the available types. If you need more detail about how to use them, check the tests.
+Let me give you an overview of the available types. If you need more detail about how to use them, check *schema.ja* in the tests folder.
 
 ### Scalar
 The primitive types, aka everything that may be represented as a string. The ones with parameters you need to instantiate with *new* and pass according parameters, the others may be used as are.
@@ -12,10 +12,20 @@ The primitive types, aka everything that may be represented as a string. The one
 * GraphQLEmail
 * GraphQLURL
 * GraphQLLimitedString(min, max, alphabet)
+* GraphQLPassword(min, max, alphabet, complexity)
+
+*complexity* default options:
+```JavaScript
+{
+  alphaNumeric: false,
+  mixedCase: false,
+  specialChars: false
+}
+```
 
 ## Installation
 ```Bash
-npm install graphql-custom-types
+npm install graphql-custom-types --save
 ```
 
 ## Usage
@@ -23,7 +33,8 @@ npm install graphql-custom-types
 import {
   GraphQLEmail,
   GraphQLURL,
-  GraphQLLimitedString
+  GraphQLLimitedString,
+  GraphQLPassword
 } from 'graphql-custom-types';
 ```
 
