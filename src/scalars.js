@@ -45,13 +45,19 @@ const alphabetValidator = function(ast, alphabet) {
 };
 
 const complexityValidator = function(ast, options) {
-  var complexity = {
+  const complexity = options || {};
+  const alhpaNumericRe = /^(?=.*[0-9])(?=.*[a-zA-Z])([a-zA-Z0-9]+)$/;
+
+  /*
     alphaNumeric: true,
     mixedCase: true,
     specialChars: true
-  };
+  */
 
   // Check alphaNumeric
+  if(complexity.alphaNumeric && !alhpaNumericRe.test(ast.value)) {
+    throw new GraphQLError('Query error: String must contain at least one number and one letter', [ast]);
+  }
   // Check case
   // Check special Chars
 };
@@ -99,7 +105,7 @@ export class GraphQLPassword extends GraphQLCustomScalarType {
       lengthValidator(ast, min, max);
 
       if(alphabet) alphabetValidator(ast, alphabet);
-      if(complexity) (ast, complexity);
+      if(complexity) complexityValidator(ast, complexity);
 
       return ast.value;
     }
