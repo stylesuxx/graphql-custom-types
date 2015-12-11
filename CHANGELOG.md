@@ -6,7 +6,13 @@
 - RegExp type factory
 - GraphQLURL
 - GraphQLLimitedString
+- GraphQLPassword
+- CHANGELOG
 
-## [0.0.0] - 9.12.2015
+### Improved
+- Test cases
+- README
+
+## [0.0.0] - 2015-12-9
 ### Added
 - GraphQLEmail

@@ -1,68 +1,6 @@
-import {
-  graphql,
-  GraphQLSchema,
-  GraphQLObjectType,
-  GraphQLString
-} from 'graphql';
-import {
-  GraphQLEmail,
-  GraphQLURL,
-  GraphQLLimitedString
-} from '../lib/scalars';
+import { graphql } from 'graphql';
 import test from 'tape';
-
-const schema = new GraphQLSchema({
-  query: new GraphQLObjectType({
-    name: 'RootQueryType',
-    fields: {
-      email: {
-        type: GraphQLString,
-        args: {
-          item: { type: GraphQLEmail }
-        },
-        resolve: (root, {item}) => {
-          return item;
-        }
-      },
-      url: {
-        type: GraphQLString,
-        args: {
-          item: { type: GraphQLURL }
-        },
-        resolve: (root, {item}) => {
-          return item;
-        }
-      },
-      limitedStringDefault: {
-        type: GraphQLString,
-        args: {
-          item: { type: new GraphQLLimitedString() }
-        },
-        resolve: (root, {item}) => {
-          return item;
-        }
-      },
-      limitedStringMinMax: {
-        type: GraphQLString,
-        args: {
-          item: { type: new GraphQLLimitedString(3, 10) }
-        },
-        resolve: (root, {item}) => {
-          return item;
-        }
-      },
-      limitedStringAlphabet: {
-        type: GraphQLString,
-        args: {
-          item: { type: new GraphQLLimitedString(3, 10, 'abc123') }
-        },
-        resolve: (root, {item}) => {
-          return item;
-        }
-      },
-    }
-  })
-});
+import { schema } from './schema';
 
 test('GraphQLEmail', function(t) {
   const invalid = [
@@ -371,6 +309,230 @@ test('GraphQLLimitedString (min = 3, max = 10, alphabet = "abc123")', function(t
         }
         else {
           t.fail('invalid LimitedString recognized as valid: ' + item);
+        }
+      });
+    })(item);
+  }
+});
+
+test('GraphQLPasswort (alphaNumeric)', function(t) {
+  var valid = [
+    'a1',
+    'a1c',
+    'abc123',
+    '123abc1231',
+    '33333ccc22',
+    '33333ccc22C',
+    '333§ccc22'
+  ];
+
+  var invalid = [
+    '',
+    'a',
+    'aa',
+    'dddd',
+    'aaaaabbbbb',
+    '1',
+    '1234',
+    '1234567890'
+  ];
+
+  t.plan(valid.length + invalid.length);
+
+  for(var item of valid) {
+    (function(item) {
+      var query = '{password(item: "' + item + '")}';
+      graphql(schema, query).then(function(result) {
+        if(result.data && result.data.password) {
+          t.equal(result.data.password, item, 'valid Password recognized');
+        }
+        else {
+          t.fail('valid Password recognized as invalid: ' + item);
+        }
+      });
+    })(item);
+  }
+
+  for(var item of invalid) {
+    (function(item) {
+      var query = '{password(item: "' + item + '")}';
+      graphql(schema, query).then(function(result) {
+        if(result.errors) {
+          t.ok(result.errors[0].message, 'invalid Password recognized');
+        }
+        else {
+          t.fail('invalid Password recognized as valid: ' + item);
+        }
+      });
+    })(item);
+  }
+});
+
+test('GraphQLPasswort (mixedCase)', function(t) {
+  var valid = [
+    'aA',
+    'a1C',
+    'aBc123',
+    '123Abc1231',
+    '33333cCc22',
+    '33333ccc22C',
+    '333§ccC22'
+  ];
+
+  var invalid = [
+    '',
+    'a',
+    'aa',
+    'dddd',
+    'aaaaabbbbb',
+    '1',
+    '1234',
+    '1234567890',
+    '1a',
+    '123aaaa',
+    'foo23bar'
+  ];
+
+  t.plan(valid.length + invalid.length);
+
+  for(var item of valid) {
+    (function(item) {
+      var query = '{passwordMixedCase(item: "' + item + '")}';
+      graphql(schema, query).then(function(result) {
+        if(result.data && result.data.passwordMixedCase) {
+          t.equal(result.data.passwordMixedCase, item, 'valid Password recognized');
+        }
+        else {
+          t.fail('valid Password recognized as invalid: ' + item);
+        }
+      });
+    })(item);
+  }
+
+  for(var item of invalid) {
+    (function(item) {
+      var query = '{passwordMixedCase(item: "' + item + '")}';
+      graphql(schema, query).then(function(result) {
+        if(result.errors) {
+          t.ok(result.errors[0].message, 'invalid Password recognized');
+        }
+        else {
+          t.fail('invalid Password recognized as valid: ' + item);
+        }
+      });
+    })(item);
+  }
+});
+
+test('GraphQLPasswort (specialChars)', function(t) {
+  var valid = [
+    'aÄ',
+    'a1*',
+    'a(c123',
+    '1%3Abc1231',
+    '33333#Cc22',
+    '!1',
+    '!#!§$%&/()'
+  ];
+
+  var invalid = [
+    '',
+    'a',
+    'aa',
+    'dddd',
+    'aaaaabbbbb',
+    '1',
+    '1234',
+    '1234567890',
+    '1a',
+    '123aaaa',
+    'foo23bar'
+  ];
+
+  t.plan(valid.length + invalid.length);
+
+  for(var item of valid) {
+    (function(item) {
+      var query = '{passwordSpecialChars(item: "' + item + '")}';
+      graphql(schema, query).then(function(result) {
+        if(result.data && result.data.passwordSpecialChars) {
+          t.equal(result.data.passwordSpecialChars, item, 'valid Password recognized');
+        }
+        else {
+          t.fail('valid Password recognized as invalid: ' + item);
+        }
+      });
+    })(item);
+  }
+
+  for(var item of invalid) {
+    (function(item) {
+      var query = '{passwordSpecialChars(item: "' + item + '")}';
+      graphql(schema, query).then(function(result) {
+        if(result.errors) {
+          t.ok(result.errors[0].message, 'invalid Password recognized');
+        }
+        else {
+          t.fail('invalid Password recognized as valid: ' + item);
+        }
+      });
+    })(item);
+  }
+});
+
+test('GraphQLPasswort (all)', function(t) {
+  var valid = [
+    'a1!B',
+    'b2§A3!',
+    '!!A1b'
+  ];
+
+  var invalid = [
+    '',
+    'a',
+    'aa',
+    'dddd',
+    'aaaaabbbbb',
+    '1',
+    '1234',
+    '1234567890',
+    '1a',
+    '123aaaa',
+    'foo23bar',
+    'aÄ',
+    'a1*',
+    'a(c123',
+    '1%3Abc1231',
+    '33333#Cc22',
+    '!1'
+  ];
+
+  t.plan(valid.length + invalid.length);
+
+  for(var item of valid) {
+    (function(item) {
+      var query = '{passwordAll(item: "' + item + '")}';
+      graphql(schema, query).then(function(result) {
+        if(result.data && result.data.passwordAll) {
+          t.equal(result.data.passwordAll, item, 'valid Password recognized');
+        }
+        else {
+          console.log(result);
+          t.fail('valid Password recognized as invalid: ' + item);
+        }
+      });
+    })(item);
+  }
+
+  for(var item of invalid) {
+    (function(item) {
+      var query = '{passwordAll(item: "' + item + '")}';
+      graphql(schema, query).then(function(result) {
+        if(result.errors) {
+          t.ok(result.errors[0].message, 'invalid Password recognized');
+        }
+        else {
+          t.fail('invalid Password recognized as valid: ' + item);
         }
       });
     })(item);
