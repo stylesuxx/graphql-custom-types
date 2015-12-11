@@ -9,7 +9,7 @@ import {
   GraphQLURL,
   GraphQLLimitedString,
   GraphQLPassword
-} from '../lib/scalars';
+} from '../lib';
 
 export const schema = new GraphQLSchema({
   query: new GraphQLObjectType({
