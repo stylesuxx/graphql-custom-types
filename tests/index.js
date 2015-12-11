@@ -517,7 +517,6 @@ test('GraphQLPasswort (all)', function(t) {
           t.equal(result.data.passwordAll, item, 'valid Password recognized');
         }
         else {
-          console.log(result);
           t.fail('valid Password recognized as invalid: ' + item);
         }
       });
@@ -533,6 +532,61 @@ test('GraphQLPasswort (all)', function(t) {
         }
         else {
           t.fail('invalid Password recognized as valid: ' + item);
+        }
+      });
+    })(item);
+  }
+});
+
+test('GraphQLDateTime', function(t) {
+  var valid = [
+    '2015',
+    '9999',
+    '123456',
+    '2015-1',
+    '2015-1-1',
+    '2015-5-31',
+    '2015-01-01',
+    '2015-05-31',
+    '2015-05-31T14:23',
+    '2015-05-31T14:23:30',
+    '2015-05-31T14:23:30.1234',
+    '2015-05-31T14:23Z',
+    '2015-05-31T14:23:30.1234Z',
+    '2015-05-31T14:23:30.1234+05:00'
+  ];
+
+  var invalid = [
+    '2015-13-1',
+    '2015-01-01T23:61:59',
+    '2015-05-31T14:63:30'
+  ];
+
+  t.plan(valid.length + invalid.length);
+
+  for(var item of valid) {
+    (function(item) {
+      var query = '{date(item: "' + item + '")}';
+      graphql(schema, query).then(function(result) {
+        if(result.data && result.data.date) {
+          t.equal(result.data.date, item, 'valid DateTime recognized');
+        }
+        else {
+          t.fail('valid Password recognized as invalid: ' + item);
+        }
+      });
+    })(item);
+  }
+
+  for(var item of invalid) {
+    (function(item) {
+      var query = '{date(item: "' + item + '")}';
+      graphql(schema, query).then(function(result) {
+        if(result.errors) {
+          t.ok(result.errors[0].message, 'invalid DateTime recognized');
+        }
+        else {
+          t.fail('invalid DateTime recognized as valid: ' + item);
         }
       });
     })(item);

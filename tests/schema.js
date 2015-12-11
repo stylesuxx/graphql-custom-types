@@ -8,7 +8,8 @@ import {
   GraphQLEmail,
   GraphQLURL,
   GraphQLLimitedString,
-  GraphQLPassword
+  GraphQLPassword,
+  GraphQLDateTime
 } from '../lib';
 
 export const schema = new GraphQLSchema({
@@ -63,7 +64,7 @@ export const schema = new GraphQLSchema({
       password: {
         type: GraphQLString,
         args: {
-          item: { type: new GraphQLPassword(null, null, null, { alphaNumeric: true })}
+          item: { type: new GraphQLPassword(null, null, null, { alphaNumeric: true }) }
         },
         resolve: (root, {item}) => {
           return item;
@@ -72,7 +73,7 @@ export const schema = new GraphQLSchema({
       passwordMixedCase: {
         type: GraphQLString,
         args: {
-          item: { type: new GraphQLPassword(null, null, null, { mixedCase: true })}
+          item: { type: new GraphQLPassword(null, null, null, { mixedCase: true }) }
         },
         resolve: (root, {item}) => {
           return item;
@@ -81,7 +82,7 @@ export const schema = new GraphQLSchema({
       passwordSpecialChars: {
         type: GraphQLString,
         args: {
-          item: { type: new GraphQLPassword(null, null, null, { specialChars: true })}
+          item: { type: new GraphQLPassword(null, null, null, { specialChars: true }) }
         },
         resolve: (root, {item}) => {
           return item;
@@ -90,12 +91,21 @@ export const schema = new GraphQLSchema({
       passwordAll: {
         type: GraphQLString,
         args: {
-          item: { type: new GraphQLPassword(3, 6, 'abcABC123!"§', { specialChars: true, mixedCase: true, alphaNumeric: true })}
+          item: { type: new GraphQLPassword(3, 6, 'abcABC123!"§', { specialChars: true, mixedCase: true, alphaNumeric: true }) }
         },
         resolve: (root, {item}) => {
           return item;
         }
       },
+      date: {
+        type: GraphQLString,
+        args: {
+          item: { type: GraphQLDateTime }
+        },
+        resolve: (root, {item}) => {
+          return item;
+        }
+      }
     }
   })
 });
