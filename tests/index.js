@@ -7,7 +7,8 @@ import {
 import {
   GraphQLEmail,
   GraphQLURL,
-  GraphQLLimitedString
+  GraphQLLimitedString,
+  GraphQLPassword
 } from '../lib/scalars';
 import test from 'tape';
 
@@ -55,6 +56,15 @@ const schema = new GraphQLSchema({
         type: GraphQLString,
         args: {
           item: { type: new GraphQLLimitedString(3, 10, 'abc123') }
+        },
+        resolve: (root, {item}) => {
+          return item;
+        }
+      },
+      password: {
+        type: GraphQLString,
+        args: {
+          item: { type: new GraphQLPassword(null, null, null, { alphaNumeric: true })}
         },
         resolve: (root, {item}) => {
           return item;
@@ -371,6 +381,57 @@ test('GraphQLLimitedString (min = 3, max = 10, alphabet = "abc123")', function(t
         }
         else {
           t.fail('invalid LimitedString recognized as valid: ' + item);
+        }
+      });
+    })(item);
+  }
+});
+
+test('GraphQLPasswort (alphaNumeric)', function(t) {
+  var valid = [
+    'a1',
+    'a1c',
+    'abc123',
+    '123abc1231',
+    'aaaaabbbbb',
+    '33333ccc22'
+  ];
+
+  var invalid = [
+    '',
+    'a',
+    'aa',
+    'dddd',
+    '1',
+    '1234',
+    '1234567890'
+  ];
+
+  t.plan(valid.length + invalid.length);
+
+  for(var item of valid) {
+    (function(item) {
+      var query = '{password(item: "' + item + '")}';
+      graphql(schema, query).then(function(result) {
+        if(result.data && result.data.password) {
+          t.equal(result.data.password, item, 'valid Password recognized');
+        }
+        else {
+          t.fail('valid Password recognized as invalid: ' + item);
+        }
+      });
+    })(item);
+  }
+
+  for(var item of invalid) {
+    (function(item) {
+      var query = '{password(item: "' + item + '")}';
+      graphql(schema, query).then(function(result) {
+        if(result.errors) {
+          t.ok(result.errors[0].message, 'invalid Password recognized');
+        }
+        else {
+          t.fail('invalid Password recognized as valid: ' + item);
         }
       });
     })(item);
