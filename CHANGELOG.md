@@ -7,6 +7,6 @@
 - GraphQLURL
 - GraphQLLimitedString
 
-## [0.0.0] - 9.12.2015
+## [0.0.0] - 2015-12-9
 ### Added
 - GraphQLEmail
