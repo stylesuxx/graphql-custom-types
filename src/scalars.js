@@ -20,6 +20,30 @@ export const GraphQLURL = factory.getRegexScalar({
     error: 'Query error: Not a valid URL'
 });
 
+const stringValidator = function(ast) {
+  if (ast.kind !== Kind.STRING) {
+    throw new GraphQLError('Query error: Can only parse strings got a: ' + ast.kind, [ast]);
+  }
+};
+
+const lengthValidator = function(ast, min, max) {
+  if(ast.value.length < min) {
+    throw new GraphQLError('Query error: String not long enough', [ast]);
+  }
+
+  if(max && ast.value.length > max) {
+    throw new GraphQLError('Query error: String too long', [ast]);
+  }
+};
+
+const alphabetValidator = function(ast, alphabet) {
+  for(var char of ast.value) {
+    if(alphabet.indexOf(char) < 0) {
+      throw new GraphQLError('Query error: Invalid character found', [ast]);
+    }
+  }
+};
+
 var limitedStringCounter = 0;
 export class GraphQLLimitedString extends GraphQLCustomScalarType {
   constructor(min = 1, max, alphabet) {
@@ -31,25 +55,9 @@ export class GraphQLLimitedString extends GraphQLCustomScalarType {
     if(alphabet) description += ' May only contain the following characters: ' + alphabet;
 
     const validator = function(ast) {
-      if (ast.kind !== Kind.STRING) {
-        throw new GraphQLError('Query error: Can only parse strings got a: ' + ast.kind, [ast]);
-      }
-
-      if(ast.value.length < min) {
-        throw new GraphQLError('Query error: String not long enough', [ast]);
-      }
-
-      if(max && ast.value.length > max) {
-        throw new GraphQLError('Query error: String too long', [ast]);
-      }
-
-      if(alphabet) {
-        for(var char of ast.value) {
-          if(alphabet.indexOf(char) < 0) {
-            throw new GraphQLError('Query error: Invalid character found', [ast]);
-          }
-        }
-      }
+      stringValidator(ast);
+      lengthValidator(ast, min, max);
+      if(alphabet) alphabetValidator(ast, alphabet);
 
       return ast.value;
     }
