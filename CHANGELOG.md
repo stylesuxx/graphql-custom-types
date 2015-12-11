@@ -12,6 +12,7 @@
 ### Improved
 - Test cases
 - README
+- Improved NPM config, exlude files that are not needed to use the library
 
 ## [0.0.0] - 2015-12-9
 ### Added
