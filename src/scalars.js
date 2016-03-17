@@ -20,6 +20,14 @@ export const GraphQLURL = factory.getRegexScalar({
     error: 'Query error: Not a valid URL'
 });
 
+export const GraphQLUUID = factory.getRegexScalar({
+    name: 'UUID',
+    // https://github.com/chriso/validator.js/blob/master/src/lib/isUUID.js#L7
+    regex: new RegExp('^[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{12}$', 'i'),
+    description: 'The UUID scalar type represents a UUID.',
+    error: 'Query error: Not a valid UUID'
+});
+
 const stringValidator = function(ast) {
   if (ast.kind !== Kind.STRING) {
     throw new GraphQLError('Query error: Can only parse strings got a: ' + ast.kind, [ast]);
