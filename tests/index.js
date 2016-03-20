@@ -629,7 +629,6 @@ test('GraphQLUUID', function(t) {
     (function(item) {
       var query = '{uuid(item: "' + item + '")}';
       graphql(schema, query).then(function(result) {
-        console.log(result.data);
         if(result.data && result.data.uuid) {
           t.equal(result.data.uuid, item, 'valid UUID recognized');
         }
