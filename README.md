@@ -14,6 +14,7 @@ The primitive types, aka everything that may be represented as a string. The one
 * GraphQLDateTime
 * GraphQLLimitedString(min, max, alphabet)
 * GraphQLPassword(min, max, alphabet, complexity)
+* GraphQLUUID
 
 *complexity* default options:
 ```JavaScript
@@ -36,7 +37,8 @@ import {
   GraphQLURL,
   GraphQLDateTime,
   GraphQLLimitedString,
-  GraphQLPassword
+  GraphQLPassword,
+  GraphQLUUID
 } from 'graphql-custom-types';
 ```
 

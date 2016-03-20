@@ -9,7 +9,8 @@ import {
   GraphQLURL,
   GraphQLLimitedString,
   GraphQLPassword,
-  GraphQLDateTime
+  GraphQLDateTime,
+  GraphQLUUID
 } from '../lib';
 
 export const schema = new GraphQLSchema({
@@ -105,7 +106,16 @@ export const schema = new GraphQLSchema({
         resolve: (root, {item}) => {
           return item;
         }
-      }
+      },
+      uuid: {
+        type: GraphQLString,
+        args: {
+          item: { type: GraphQLUUID }
+        },
+        resolve: (root, {item}) => {
+          return item;
+        }
+      },
     }
   })
 });
