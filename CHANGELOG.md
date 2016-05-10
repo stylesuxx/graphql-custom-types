@@ -1,6 +1,8 @@
 # Changelog
 
 ## [Unreleased]
+
+## [0.4.0] - 2016-05-10
 ### Added
 - Export factory and GraphQLCustomScalarType
 - Test against nodeJS >= 4.4 && <= 6.1
