@@ -1,6 +1,13 @@
 # Changelog
 
 ## [Unreleased]
+### Added
+- Export factory and GraphQLCustomScalarType
+- Test against nodeJS >= 4.4 && <= 6.1
+
+### Removed
+- Support for iojs
+- Support for nodeJS < 4.4
 
 ## [0.2.0] - 2015-12-12
 ### Added
