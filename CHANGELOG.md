@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [0.5.1] - 2016-06-08
+### Updated dependencies
+- graphql to ^0.6.0
+
 ## [0.5.0] - 2016-06-08
 ### Imporoved
 - Properly parse values
