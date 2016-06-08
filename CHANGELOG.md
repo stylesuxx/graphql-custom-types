@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [0.5.0] - 2016-06-08
+### Imporoved
+- Properly parse values
+
 ## [0.4.0] - 2016-05-10
 ### Added
 - Export factory and GraphQLCustomScalarType

@@ -1,4 +1,5 @@
 import { GraphQLScalarType } from 'graphql';
+import { Kind } from 'graphql/language';
 
 export class GraphQLCustomScalarType extends GraphQLScalarType {
   constructor(name, description, parser) {
@@ -9,7 +10,11 @@ export class GraphQLCustomScalarType extends GraphQLScalarType {
         return value;
       },
       parseValue: value => {
-        return value;
+        const ast = {
+          kind: Kind.STRING,
+          value: value
+        };
+        return parser(ast);
       },
       parseLiteral: ast => {
         return parser(ast);
