@@ -22,7 +22,7 @@
     "eslint": "^2.9.0",
     "tape": "^4.2.2"
   },
-  "dependencies": {
+  "peerDependencies": {
     "graphql": "^0.6.0"
   },
   "keywords": [
