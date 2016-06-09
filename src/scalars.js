@@ -128,7 +128,7 @@ export const GraphQLDateTime = factory.getCustomScalar(
   'The DateTime scalar type represents date time strings complying to ISO-8601.',
   function(ast) {
     stringValidator(ast);
-    if(!Date.parse(ast.value)) {
+    if(isNaN(Date.parse(ast.value))) {
       throw new GraphQLError('Query error: String is not a valid date time string', [ast]);
     }
 

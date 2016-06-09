@@ -26,8 +26,9 @@ The primitive types, aka everything that may be represented as a string. The one
 ```
 
 ## Installation
+Most likely you already will have it, but do not forget to also install *graphql*, since it is required as peer dependency:
 ```Bash
-npm install graphql-custom-types --save
+npm install graphql graphql-custom-types --save
 ```
 
 ## Usage
