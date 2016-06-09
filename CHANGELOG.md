@@ -2,6 +2,13 @@
 
 ## [Unreleased]
 
+## [0.6.0] - 2016-06-09
+### Improved
+- graphql is now a peerDependecy
+
+### Fixed
+- Date validation
+
 ## [0.5.1] - 2016-06-08
 ### Updated dependencies
 - graphql to ^0.6.0
