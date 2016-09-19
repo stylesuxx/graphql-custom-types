@@ -1,5 +1,5 @@
 # GraphQL Custom Types
-[![npm version](https://badge.fury.io/js/graphql-custom-types.svg)](https://badge.fury.io/js/graphql-custom-types) [![Build Status](https://secure.travis-ci.org/stylesuxx/graphql-custom-types.png?branch=master)](https://travis-ci.org/stylesuxx/graphql-custom-types) [![Dependency Status](https://david-dm.org/stylesuxx/graphql-custom-types.svg)](https://david-dm.org/stylesuxx/graphql-custom-types)
+[![npm version](https://badge.fury.io/js/graphql-custom-types.svg)](https://badge.fury.io/js/graphql-custom-types) [![Build Status](https://secure.travis-ci.org/stylesuxx/graphql-custom-types.png?branch=master)](https://travis-ci.org/stylesuxx/graphql-custom-types) [![Dependency Status](https://david-dm.org/stylesuxx/graphql-custom-types.svg)](https://david-dm.org/stylesuxx/graphql-custom-types) [![devDependencies Status](https://david-dm.org/stylesuxx/graphql-custom-types/dev-status.svg)](https://david-dm.org/stylesuxx/graphql-custom-types?type=dev)
 
 > This is a collection of custom GraphQL types that I tend to reuse quite often so I packed them into a module.
 
