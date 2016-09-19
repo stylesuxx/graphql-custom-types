@@ -1,6 +1,13 @@
 # Changelog
 
 ## [Unreleased]
+### Improved
+- Added badges for dev and peer dependencies
+
+### Updated dependencies
+- graphql
+- eslint
+
 
 ## [0.6.0] - 2016-06-09
 ### Improved
