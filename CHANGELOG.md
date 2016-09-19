@@ -2,6 +2,17 @@
 
 ## [Unreleased]
 
+## [0.7.0] - 2016-11-20
+### Improved
+- Added badges for dev and peer dependencies
+
+### Updated dependencies
+- graphql
+- eslint
+
+### Fixed
+- Properly import Factory
+
 ## [0.6.0] - 2016-06-09
 ### Improved
 - graphql is now a peerDependecy
