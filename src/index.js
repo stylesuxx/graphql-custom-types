@@ -11,7 +11,7 @@ import {
   GraphQLCustomScalarType
 } from './types';
 
-import Factory from './factory';
+import { Factory } from './factory';
 
 module.exports = {
   Factory,
