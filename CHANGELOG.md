@@ -2,7 +2,10 @@
 
 ## [Unreleased]
 
-## [0.7.0] - 2016-11-20
+## [0.7.1] - 2016-11-14
+Updated graphql dependencies
+
+## [0.7.0] - 2016-09-20
 ### Improved
 - Added badges for dev and peer dependencies
 
