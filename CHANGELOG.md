@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+## [0.7.0] - 2016-11-15
+Updated dev dependencies
+
 ## [0.7.1] - 2016-11-14
 Updated graphql dependencies
 
