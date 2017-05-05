@@ -1,7 +1,7 @@
 {
   "name": "graphql-custom-types",
   "repository": "stylesuxx/graphql-custom-types",
-  "version": "0.7.2",
+  "version": "0.7.3",
   "description": "Collection of custom graphql types like Email, URL, password and many more",
   "author": "Chris Landa <stylesuxx@gmail.com>",
   "license": "MIT",
