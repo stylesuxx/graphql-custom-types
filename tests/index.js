@@ -1,8 +1,8 @@
-import { graphql } from 'graphql';
+import {graphql} from 'graphql';
 import test from 'tape';
-import { schema } from './schema';
+import {schema} from './schema';
 
-test('GraphQLEmail', function(t) {
+test('GraphQLEmail', t => {
   const invalid = [
     'plainaddress',
     '#@%^%#$@#$@#.com',
@@ -37,36 +37,35 @@ test('GraphQLEmail', function(t) {
 
   t.plan(valid.length + invalid.length);
 
-  for(var item of invalid) {
-    (function(item) {
-      var query = '{email(item: "' + item + '")}';
-      graphql(schema, query).then(function(result) {
-        if(result.errors) {
-          t.equal(result.errors[0].message, 'Query error: Not a valid Email address', 'invalid address recognized');
-        }
-        else {
-          t.fail('invalid address recognized as valid: ' + item);
-        }
+  for (const item of invalid) {
+    const query = '{email(item: "' + item + '")}';
+    graphql(schema, query)
+      .then(() => {
+        t.fail('invalid address recognized as valid: ' + item);
+      })
+      .catch(error => {
+        t.equal(error.message, 'Query error: Not a valid Email address', 'invalid address recognized');
       });
-    })(item);
   }
 
-  for(var item of valid) {
-    (function(item) {
-      var query = '{email(item: "' + item + '")}';
-      graphql(schema, query).then(function(result) {
-        if(result.data && result.data.email) {
+  for (const item of valid) {
+    const query = '{email(item: "' + item + '")}';
+    graphql(schema, query)
+      .then(result => {
+        if (result.data && result.data.email) {
           t.equal(result.data.email, item, 'valid address recognized');
         }
         else {
           t.fail('valid address recognized as invalid: ' + item);
         }
+      })
+      .catch(error => {
+        t.fail(error);
       });
-    })(item);
   }
 });
 
-test('GraphQLURL', function(t) {
+test('GraphQLURL', t => {
   const valid = [
     'http://foo.com/blah_blah',
     'http://foo.com/blah_blah/',
@@ -147,77 +146,75 @@ test('GraphQLURL', function(t) {
 
   t.plan(valid.length + invalid.length);
 
-  for(var item of valid) {
-    (function(item) {
-      var query = '{url(item: "' + item + '")}';
-      graphql(schema, query).then(function(result) {
-        if(result.data && result.data.url) {
+  for (const item of valid) {
+    const query = '{url(item: "' + item + '")}';
+    graphql(schema, query)
+      .then(result => {
+        if (result.data && result.data.url) {
           t.equal(result.data.url, item, 'valid URL recognized');
         }
         else {
           t.fail('valid URL recognized as invalid: ' + item);
         }
+      })
+      .catch(error => {
+        t.fail(error);
       });
-    })(item);
   }
 
-  for(var item of invalid) {
-    (function(item) {
-      var query = '{url(item: "' + item + '")}';
-      graphql(schema, query).then(function(result) {
-        if(result.errors) {
-          t.equal(result.errors[0].message, 'Query error: Not a valid URL', 'invalid URL recognized');
-        }
-        else {
-          t.fail('invalid URL recognized as valid: ' + item);
-        }
+  for (const item of invalid) {
+    const query = '{url(item: "' + item + '")}';
+    graphql(schema, query)
+      .then(() => {
+        t.fail('invalid URL recognized as valid: ' + item);
+      })
+      .catch(error => {
+        t.equal(error.message, 'Query error: Not a valid URL', 'invalid URL recognized');
       });
-    })(item);
   }
 });
 
-test('GraphQLLimitedString (default)', function(t) {
-  var valid = [
+test('GraphQLLimitedString (default)', t => {
+  const valid = [
     'a',
     'aa',
     'aaa1',
     '1aaa'
   ];
 
-  var invalid = [''];
+  const invalid = [''];
   t.plan(valid.length + invalid.length);
 
-  for(var item of valid) {
-    (function(item) {
-      var query = '{limitedStringDefault(item: "' + item + '")}';
-      graphql(schema, query).then(function(result) {
-        if(result.data && result.data.limitedStringDefault) {
+  for (const item of valid) {
+    const query = '{limitedStringDefault(item: "' + item + '")}';
+    graphql(schema, query)
+      .then(result => {
+        if (result.data && result.data.limitedStringDefault) {
           t.equal(result.data.limitedStringDefault, item, 'valid LimitedString recognized');
         }
         else {
           t.fail('valid LimitedString recognized as invalid: ' + item);
         }
+      })
+      .catch(error => {
+        t.fail(error);
       });
-    })(item);
   }
 
-  for(var item of invalid) {
-    (function(item) {
-      var query = '{limitedStringDefault(item: "' + item + '")}';
-      graphql(schema, query).then(function(result) {
-        if(result.errors) {
-          t.equal(result.errors[0].message, 'Query error: String not long enough', 'invalid LimitedString recognized');
-        }
-        else {
-          t.fail('invalid LimitedString recognized as valid: ' + item);
-        }
+  for (const item of invalid) {
+    const query = '{limitedStringDefault(item: "' + item + '")}';
+    graphql(schema, query)
+      .then(() => {
+        t.fail('invalid LimitedString recognized as valid: ' + item);
+      })
+      .catch(error => {
+        t.equal(error.message, 'Query error: String not long enough', 'invalid LimitedString recognized');
       });
-    })(item);
   }
 });
 
-test('GraphQLLimitedString (min = 3, max = 10)', function(t) {
-  var valid = [
+test('GraphQLLimitedString (min = 3, max = 10)', t => {
+  const valid = [
     'foo',
     'foobar',
     'foo-bar',
@@ -225,7 +222,7 @@ test('GraphQLLimitedString (min = 3, max = 10)', function(t) {
     '123456789'
   ];
 
-  var invalid = [
+  const invalid = [
     '',
     'a',
     'aa',
@@ -235,37 +232,36 @@ test('GraphQLLimitedString (min = 3, max = 10)', function(t) {
 
   t.plan(valid.length + invalid.length);
 
-  for(var item of valid) {
-    (function(item) {
-      var query = '{limitedStringMinMax(item: "' + item + '")}';
-      graphql(schema, query).then(function(result) {
-        if(result.data && result.data.limitedStringMinMax) {
+  for (const item of valid) {
+    const query = '{limitedStringMinMax(item: "' + item + '")}';
+    graphql(schema, query)
+      .then(result => {
+        if (result.data && result.data.limitedStringMinMax) {
           t.equal(result.data.limitedStringMinMax, item, 'valid LimitedString recognized');
         }
         else {
           t.fail('valid LimitedString recognized as invalid: ' + item);
         }
+      })
+      .catch(error => {
+        t.fail(error);
       });
-    })(item);
   }
 
-  for(var item of invalid) {
-    (function(item) {
-      var query = '{limitedStringMinMax(item: "' + item + '")}';
-      graphql(schema, query).then(function(result) {
-        if(result.errors) {
-          t.ok(result.errors[0].message, 'invalid LimitedString recognized');
-        }
-        else {
-          t.fail('invalid LimitedString recognized as valid: ' + item);
-        }
+  for (const item of invalid) {
+    const query = '{limitedStringMinMax(item: "' + item + '")}';
+    graphql(schema, query)
+      .then(() => {
+        t.fail('invalid LimitedString recognized as valid: ' + item);
+      })
+      .catch(error => {
+        t.ok(error.message, 'invalid LimitedString recognized');
       });
-    })(item);
   }
 });
 
-test('GraphQLLimitedString (min = 3, max = 10, alphabet = "abc123")', function(t) {
-  var valid = [
+test('GraphQLLimitedString (min = 3, max = 10, alphabet = "abc123")', t => {
+  const valid = [
     'aaa',
     'abc',
     'abc123',
@@ -274,7 +270,7 @@ test('GraphQLLimitedString (min = 3, max = 10, alphabet = "abc123")', function(t
     '33333ccc22'
   ];
 
-  var invalid = [
+  const invalid = [
     '',
     'a',
     'aa',
@@ -286,37 +282,36 @@ test('GraphQLLimitedString (min = 3, max = 10, alphabet = "abc123")', function(t
 
   t.plan(valid.length + invalid.length);
 
-  for(var item of valid) {
-    (function(item) {
-      var query = '{limitedStringAlphabet(item: "' + item + '")}';
-      graphql(schema, query).then(function(result) {
-        if(result.data && result.data.limitedStringAlphabet) {
+  for (const item of valid) {
+    const query = '{limitedStringAlphabet(item: "' + item + '")}';
+    graphql(schema, query)
+      .then(result => {
+        if (result.data && result.data.limitedStringAlphabet) {
           t.equal(result.data.limitedStringAlphabet, item, 'valid LimitedString recognized');
         }
         else {
           t.fail('valid LimitedString recognized as invalid: ' + item);
         }
+      })
+      .catch(error => {
+        t.fail(error);
       });
-    })(item);
   }
 
-  for(var item of invalid) {
-    (function(item) {
-      var query = '{limitedStringAlphabet(item: "' + item + '")}';
-      graphql(schema, query).then(function(result) {
-        if(result.errors) {
-          t.ok(result.errors[0].message, 'invalid LimitedString recognized');
-        }
-        else {
-          t.fail('invalid LimitedString recognized as valid: ' + item);
-        }
+  for (const item of invalid) {
+    const query = '{limitedStringAlphabet(item: "' + item + '")}';
+    graphql(schema, query)
+      .then(() => {
+        t.fail('invalid LimitedString recognized as valid: ' + item);
+      })
+      .catch(error => {
+        t.ok(error.message, 'invalid LimitedString recognized');
       });
-    })(item);
   }
 });
 
-test('GraphQLPasswort (alphaNumeric)', function(t) {
-  var valid = [
+test('GraphQLPassword (alphaNumeric)', t => {
+  const valid = [
     'a1',
     'a1c',
     'abc123',
@@ -326,7 +321,7 @@ test('GraphQLPasswort (alphaNumeric)', function(t) {
     '333§ccc22'
   ];
 
-  var invalid = [
+  const invalid = [
     '',
     'a',
     'aa',
@@ -339,37 +334,36 @@ test('GraphQLPasswort (alphaNumeric)', function(t) {
 
   t.plan(valid.length + invalid.length);
 
-  for(var item of valid) {
-    (function(item) {
-      var query = '{password(item: "' + item + '")}';
-      graphql(schema, query).then(function(result) {
-        if(result.data && result.data.password) {
+  for (const item of valid) {
+    const query = '{password(item: "' + item + '")}';
+    graphql(schema, query)
+      .then(result => {
+        if (result.data && result.data.password) {
           t.equal(result.data.password, item, 'valid Password recognized');
         }
         else {
           t.fail('valid Password recognized as invalid: ' + item);
         }
+      })
+      .catch(error => {
+        t.fail(error);
       });
-    })(item);
   }
 
-  for(var item of invalid) {
-    (function(item) {
-      var query = '{password(item: "' + item + '")}';
-      graphql(schema, query).then(function(result) {
-        if(result.errors) {
-          t.ok(result.errors[0].message, 'invalid Password recognized');
-        }
-        else {
-          t.fail('invalid Password recognized as valid: ' + item);
-        }
+  for (const item of invalid) {
+    const query = '{password(item: "' + item + '")}';
+    graphql(schema, query)
+      .then(() => {
+        t.fail('invalid Password recognized as valid: ' + item);
+      })
+      .catch(error => {
+        t.ok(error.message, 'invalid Password recognized');
       });
-    })(item);
   }
 });
 
-test('GraphQLPasswort (mixedCase)', function(t) {
-  var valid = [
+test('GraphQLPassword (mixedCase)', t => {
+  const valid = [
     'aA',
     'a1C',
     'aBc123',
@@ -379,7 +373,7 @@ test('GraphQLPasswort (mixedCase)', function(t) {
     '333§ccC22'
   ];
 
-  var invalid = [
+  const invalid = [
     '',
     'a',
     'aa',
@@ -395,37 +389,36 @@ test('GraphQLPasswort (mixedCase)', function(t) {
 
   t.plan(valid.length + invalid.length);
 
-  for(var item of valid) {
-    (function(item) {
-      var query = '{passwordMixedCase(item: "' + item + '")}';
-      graphql(schema, query).then(function(result) {
-        if(result.data && result.data.passwordMixedCase) {
+  for (const item of valid) {
+    const query = '{passwordMixedCase(item: "' + item + '")}';
+    graphql(schema, query)
+      .then(result => {
+        if (result.data && result.data.passwordMixedCase) {
           t.equal(result.data.passwordMixedCase, item, 'valid Password recognized');
         }
         else {
           t.fail('valid Password recognized as invalid: ' + item);
         }
+      })
+      .catch(error => {
+        t.fail(error);
       });
-    })(item);
   }
 
-  for(var item of invalid) {
-    (function(item) {
-      var query = '{passwordMixedCase(item: "' + item + '")}';
-      graphql(schema, query).then(function(result) {
-        if(result.errors) {
-          t.ok(result.errors[0].message, 'invalid Password recognized');
-        }
-        else {
-          t.fail('invalid Password recognized as valid: ' + item);
-        }
+  for (const item of invalid) {
+    const query = '{passwordMixedCase(item: "' + item + '")}';
+    graphql(schema, query)
+      .then(() => {
+        t.fail('invalid Password recognized as valid: ' + item);
+      })
+      .catch(error => {
+        t.ok(error.message, 'invalid Password recognized');
       });
-    })(item);
   }
 });
 
-test('GraphQLPasswort (specialChars)', function(t) {
-  var valid = [
+test('GraphQLPassword (specialChars)', t => {
+  const valid = [
     'aÄ',
     'a1*',
     'a(c123',
@@ -435,7 +428,7 @@ test('GraphQLPasswort (specialChars)', function(t) {
     '!#!§$%&/()'
   ];
 
-  var invalid = [
+  const invalid = [
     '',
     'a',
     'aa',
@@ -451,43 +444,42 @@ test('GraphQLPasswort (specialChars)', function(t) {
 
   t.plan(valid.length + invalid.length);
 
-  for(var item of valid) {
-    (function(item) {
-      var query = '{passwordSpecialChars(item: "' + item + '")}';
-      graphql(schema, query).then(function(result) {
-        if(result.data && result.data.passwordSpecialChars) {
+  for (const item of valid) {
+    const query = '{passwordSpecialChars(item: "' + item + '")}';
+    graphql(schema, query)
+      .then(result => {
+        if (result.data && result.data.passwordSpecialChars) {
           t.equal(result.data.passwordSpecialChars, item, 'valid Password recognized');
         }
         else {
           t.fail('valid Password recognized as invalid: ' + item);
         }
+      })
+      .catch(error => {
+        t.fail(error);
       });
-    })(item);
   }
 
-  for(var item of invalid) {
-    (function(item) {
-      var query = '{passwordSpecialChars(item: "' + item + '")}';
-      graphql(schema, query).then(function(result) {
-        if(result.errors) {
-          t.ok(result.errors[0].message, 'invalid Password recognized');
-        }
-        else {
-          t.fail('invalid Password recognized as valid: ' + item);
-        }
+  for (const item of invalid) {
+    const query = '{passwordSpecialChars(item: "' + item + '")}';
+    graphql(schema, query)
+      .then(() => {
+        t.fail('invalid Password recognized as valid: ' + item);
+      })
+      .catch(error => {
+        t.ok(error.message, 'invalid Password recognized');
       });
-    })(item);
   }
 });
 
-test('GraphQLPasswort (all)', function(t) {
-  var valid = [
+test('GraphQLPassword (all)', t => {
+  const valid = [
     'a1!B',
     'b2§A3!',
     '!!A1b'
   ];
 
-  var invalid = [
+  const invalid = [
     '',
     'a',
     'aa',
@@ -509,37 +501,36 @@ test('GraphQLPasswort (all)', function(t) {
 
   t.plan(valid.length + invalid.length);
 
-  for(var item of valid) {
-    (function(item) {
-      var query = '{passwordAll(item: "' + item + '")}';
-      graphql(schema, query).then(function(result) {
-        if(result.data && result.data.passwordAll) {
+  for (const item of valid) {
+    const query = '{passwordAll(item: "' + item + '")}';
+    graphql(schema, query)
+      .then(result => {
+        if (result.data && result.data.passwordAll) {
           t.equal(result.data.passwordAll, item, 'valid Password recognized');
         }
         else {
           t.fail('valid Password recognized as invalid: ' + item);
         }
+      })
+      .catch(error => {
+        t.fail(error);
       });
-    })(item);
   }
 
-  for(var item of invalid) {
-    (function(item) {
-      var query = '{passwordAll(item: "' + item + '")}';
-      graphql(schema, query).then(function(result) {
-        if(result.errors) {
-          t.ok(result.errors[0].message, 'invalid Password recognized');
-        }
-        else {
-          t.fail('invalid Password recognized as valid: ' + item);
-        }
+  for (const item of invalid) {
+    const query = '{passwordAll(item: "' + item + '")}';
+    graphql(schema, query)
+      .then(() => {
+        t.fail('invalid Password recognized as valid: ' + item);
+      })
+      .catch(error => {
+        t.ok(error.message, 'invalid Password recognized');
       });
-    })(item);
   }
 });
 
-test('GraphQLDateTime', function(t) {
-  var valid = [
+test('GraphQLDateTime', t => {
+  const valid = [
     '2015',
     '9999',
     '123456',
@@ -558,7 +549,7 @@ test('GraphQLDateTime', function(t) {
     '1969-12-31T23:59:59.999Z'
   ];
 
-  var invalid = [
+  const invalid = [
     '2015-13-1',
     '2015-01-01T23:61:59',
     '2015-05-31T14:63:30'
@@ -566,37 +557,36 @@ test('GraphQLDateTime', function(t) {
 
   t.plan(valid.length + invalid.length);
 
-  for(var item of valid) {
-    (function(item) {
-      var query = '{date(item: "' + item + '")}';
-      graphql(schema, query).then(function(result) {
-        if(result.data && result.data.date) {
+  for (const item of valid) {
+    const query = '{date(item: "' + item + '")}';
+    graphql(schema, query)
+      .then(result => {
+        if (result.data && result.data.date) {
           t.equal(result.data.date, item, 'valid DateTime recognized');
         }
         else {
           t.fail('valid Password recognized as invalid: ' + item);
         }
+      })
+      .catch(error => {
+        t.fail(error);
       });
-    })(item);
   }
 
-  for(var item of invalid) {
-    (function(item) {
-      var query = '{date(item: "' + item + '")}';
-      graphql(schema, query).then(function(result) {
-        if(result.errors) {
-          t.ok(result.errors[0].message, 'invalid DateTime recognized');
-        }
-        else {
-          t.fail('invalid DateTime recognized as valid: ' + item);
-        }
+  for (const item of invalid) {
+    const query = '{date(item: "' + item + '")}';
+    graphql(schema, query)
+      .then(() => {
+        t.fail('invalid DateTime recognized as valid: ' + item);
+      })
+      .catch(error => {
+        t.ok(error.message, 'invalid DateTime recognized');
       });
-    })(item);
   }
 });
 
 
-test('GraphQLUUID', function(t) {
+test('GraphQLUUID', t => {
   const valid = [
     'bfaa2768-ba8c-11e5-9912-ba0be0483c18',
     'E8D6F4C2-BA8C-11E5-9912-BA0BE0483C18',
@@ -627,31 +617,30 @@ test('GraphQLUUID', function(t) {
 
   t.plan(valid.length + invalid.length);
 
-  for(var item of valid) {
-    (function(item) {
-      var query = '{uuid(item: "' + item + '")}';
-      graphql(schema, query).then(function(result) {
-        if(result.data && result.data.uuid) {
+  for (const item of valid) {
+    const query = '{uuid(item: "' + item + '")}';
+    graphql(schema, query)
+      .then(result => {
+        if (result.data && result.data.uuid) {
           t.equal(result.data.uuid, item, 'valid UUID recognized');
         }
         else {
           t.fail('valid UUID recognized as invalid: ' + item);
         }
+      })
+      .catch(error => {
+        t.fail(error);
       });
-    })(item);
   }
 
-  for(var item of invalid) {
-    (function(item) {
-      var query = '{uuid(item: "' + item + '")}';
-      graphql(schema, query).then(function(result) {
-        if(result.errors) {
-          t.equal(result.errors[0].message, 'Query error: Not a valid UUID', 'invalid UUID recognized');
-        }
-        else {
-          t.fail('invalid UUID recognized as valid: ' + item);
-        }
+  for (const item of invalid) {
+    const query = '{uuid(item: "' + item + '")}';
+    graphql(schema, query)
+      .then(() => {
+        t.fail('invalid UUID recognized as valid: ' + item);
+      })
+      .catch(error => {
+        t.equal(error.message, 'Query error: Not a valid UUID', 'invalid UUID recognized');
       });
-    })(item);
   }
 });
