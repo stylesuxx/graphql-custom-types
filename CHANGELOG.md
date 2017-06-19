@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+## [0.7.4] - 2017-07-14
+Updated peer dependency
+
 ## [0.7.3] - 2017-05-05
 Updated peer dependency
 
