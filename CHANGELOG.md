@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+## [1.2.0] - 2017-10-02
+Updated peer dependency
+
 ## [1.1.0] - 2017-06-28
 Added typescript definitions
 Added editorconfig
