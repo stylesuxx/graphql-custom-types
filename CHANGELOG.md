@@ -2,24 +2,29 @@
 
 ## [Unreleased]
 
+## [1.3.0] - 2018-01-31
+- Updated graphql peer dependency
+- Updated dev dependencies
+- Adjusted test cases - graphql ^0.12.0 is not throwing errors when validation fails, instead it is populating an error property in the result object. Testing will fail with older graphql versions.
+
 ## [1.2.0] - 2017-10-02
-Updated peer dependency
+- Updated peer dependency
 
 ## [1.1.0] - 2017-06-28
-Added typescript definitions
-Added editorconfig
+- Added typescript definitions
+- Added editorconfig
 
 ## [1.0.0] - 2017-06-19
-Updated peer dependency
+- Updated peer dependency
 
 ## [0.7.3] - 2017-05-05
-Updated peer dependency
+- Updated peer dependency
 
 ## [0.7.2] - 2016-11-15
-Updated dev dependencies
+- Updated dev dependencies
 
 ## [0.7.1] - 2016-11-14
-Updated graphql dependencies
+- Updated graphql dependencies
 
 ## [0.7.0] - 2016-09-20
 ### Improved
