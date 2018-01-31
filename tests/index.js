@@ -1,4 +1,4 @@
-import {graphql} from 'graphql';
+import {graphql, formatError} from 'graphql';
 import test from 'tape';
 import {schema} from './schema';
 
@@ -40,11 +40,17 @@ test('GraphQLEmail', t => {
   for (const item of invalid) {
     const query = '{email(item: "' + item + '")}';
     graphql(schema, query)
-      .then(() => {
-        t.fail('invalid address recognized as valid: ' + item);
+      .then(result => {
+        if(result.errors) {
+          result.errors = result.errors.map(formatError);
+          t.equal(result.errors[0].message, 'Expected type Email, found "' + item + '"; Query error: Not a valid Email address', 'invalid address recognized');
+        }
+        else {
+          t.fail('invalid address recognized as valid: ' + item);
+        }
       })
       .catch(error => {
-        t.equal(error.message, 'Query error: Not a valid Email address', 'invalid address recognized');
+        t.fail(error);
       });
   }
 
@@ -52,7 +58,7 @@ test('GraphQLEmail', t => {
     const query = '{email(item: "' + item + '")}';
     graphql(schema, query)
       .then(result => {
-        if (result.data && result.data.email) {
+        if (result.data && result.data.email && !result.errors) {
           t.equal(result.data.email, item, 'valid address recognized');
         }
         else {
@@ -150,7 +156,7 @@ test('GraphQLURL', t => {
     const query = '{url(item: "' + item + '")}';
     graphql(schema, query)
       .then(result => {
-        if (result.data && result.data.url) {
+        if (result.data && result.data.url && !result.errors) {
           t.equal(result.data.url, item, 'valid URL recognized');
         }
         else {
@@ -165,11 +171,17 @@ test('GraphQLURL', t => {
   for (const item of invalid) {
     const query = '{url(item: "' + item + '")}';
     graphql(schema, query)
-      .then(() => {
-        t.fail('invalid URL recognized as valid: ' + item);
+      .then(result => {
+        if(result.errors) {
+          result.errors = result.errors.map(formatError);
+          t.equal(result.errors[0].message, 'Expected type URL, found "' + item + '"; Query error: Not a valid URL', 'invalid address recognized');
+        }
+        else {
+          t.fail('invalid URL recognized as valid: ' + item);
+        }
       })
       .catch(error => {
-        t.equal(error.message, 'Query error: Not a valid URL', 'invalid URL recognized');
+        t.fail(error);
       });
   }
 });
@@ -189,7 +201,7 @@ test('GraphQLLimitedString (default)', t => {
     const query = '{limitedStringDefault(item: "' + item + '")}';
     graphql(schema, query)
       .then(result => {
-        if (result.data && result.data.limitedStringDefault) {
+        if (result.data && result.data.limitedStringDefault && !result.errors) {
           t.equal(result.data.limitedStringDefault, item, 'valid LimitedString recognized');
         }
         else {
@@ -204,16 +216,22 @@ test('GraphQLLimitedString (default)', t => {
   for (const item of invalid) {
     const query = '{limitedStringDefault(item: "' + item + '")}';
     graphql(schema, query)
-      .then(() => {
-        t.fail('invalid LimitedString recognized as valid: ' + item);
+      .then(result => {
+        if(result.errors) {
+          result.errors = result.errors.map(formatError);
+          t.equal(result.errors[0].message, 'Expected type LimitedString, found "' + item + '"; Query error: String not long enough', 'invalid LimitedString recognized');
+        }
+        else {
+          t.fail('invalid LimitedString recognized as valid: ' + item);
+        }
       })
       .catch(error => {
-        t.equal(error.message, 'Query error: String not long enough', 'invalid LimitedString recognized');
+        t.fail(error);
       });
   }
 });
 
-test('GraphQLLimitedString (min = 3, max = 10)', t => {
+test('GraphQLLimitedString too short (min = 3, max = 10)', t => {
   const valid = [
     'foo',
     'foobar',
@@ -226,8 +244,6 @@ test('GraphQLLimitedString (min = 3, max = 10)', t => {
     '',
     'a',
     'aa',
-    '01234567890',
-    'foobar23456'
   ];
 
   t.plan(valid.length + invalid.length);
@@ -236,7 +252,7 @@ test('GraphQLLimitedString (min = 3, max = 10)', t => {
     const query = '{limitedStringMinMax(item: "' + item + '")}';
     graphql(schema, query)
       .then(result => {
-        if (result.data && result.data.limitedStringMinMax) {
+        if (result.data && result.data.limitedStringMinMax && !result.errors) {
           t.equal(result.data.limitedStringMinMax, item, 'valid LimitedString recognized');
         }
         else {
@@ -251,33 +267,85 @@ test('GraphQLLimitedString (min = 3, max = 10)', t => {
   for (const item of invalid) {
     const query = '{limitedStringMinMax(item: "' + item + '")}';
     graphql(schema, query)
-      .then(() => {
-        t.fail('invalid LimitedString recognized as valid: ' + item);
+      .then(result => {
+        if(result.errors) {
+          result.errors = result.errors.map(formatError);
+          t.equal(result.errors[0].message, 'Expected type LimitedString2, found "' + item + '"; Query error: String not long enough', 'invalid LimitedString recognized');
+        }
+        else {
+          t.fail('invalid LimitedString recognized as valid: ' + item);
+        }
       })
       .catch(error => {
-        t.ok(error.message, 'invalid LimitedString recognized');
+        t.fail(error);
       });
   }
 });
 
-test('GraphQLLimitedString (min = 3, max = 10, alphabet = "abc123")', t => {
+test('GraphQLLimitedString too long (min = 3, max = 10)', t => {
+  const valid = [
+    'foo',
+    'foobar',
+    'foo-bar',
+    'foobar23',
+    '123456789'
+  ];
+
+  const invalid = [
+    '01234567890',
+    'foobar23456'
+  ];
+
+  t.plan(valid.length + invalid.length);
+
+  for (const item of valid) {
+    const query = '{limitedStringMinMax(item: "' + item + '")}';
+    graphql(schema, query)
+      .then(result => {
+        if (result.data && result.data.limitedStringMinMax && !result.errors) {
+          t.equal(result.data.limitedStringMinMax, item, 'valid LimitedString recognized');
+        }
+        else {
+          t.fail('valid LimitedString recognized as invalid: ' + item);
+        }
+      })
+      .catch(error => {
+        t.fail(error);
+      });
+  }
+
+  for (const item of invalid) {
+    const query = '{limitedStringMinMax(item: "' + item + '")}';
+    graphql(schema, query)
+      .then(result => {
+        if(result.errors) {
+          result.errors = result.errors.map(formatError);
+          t.equal(result.errors[0].message, 'Expected type LimitedString2, found "' + item + '"; Query error: String too long', 'invalid LimitedString recognized');
+        }
+        else {
+          t.fail('invalid LimitedString recognized as valid: ' + item);
+        }
+      })
+      .catch(error => {
+        t.fail(error);
+      });
+  }
+});
+
+test('GraphQLLimitedString too short (min = 3, max = 10, alphabet = "abc123")', t => {
   const valid = [
     'aaa',
     'abc',
     'abc123',
     '1231231231',
     'aaaaabbbbb',
-    '33333ccc22'
+    '33333ccc22',
   ];
 
   const invalid = [
     '',
     'a',
     'aa',
-    'dddd',
-    'abd1234',
-    '01234567890',
-    'foobar23456'
   ];
 
   t.plan(valid.length + invalid.length);
@@ -301,11 +369,69 @@ test('GraphQLLimitedString (min = 3, max = 10, alphabet = "abc123")', t => {
   for (const item of invalid) {
     const query = '{limitedStringAlphabet(item: "' + item + '")}';
     graphql(schema, query)
-      .then(() => {
-        t.fail('invalid LimitedString recognized as valid: ' + item);
+      .then(result => {
+        if(result.errors) {
+          result.errors = result.errors.map(formatError);
+          t.equal(result.errors[0].message, 'Expected type LimitedString3, found "' + item + '"; Query error: String not long enough', 'invalid LimitedString recognized');
+        }
+        else {
+          t.fail('invalid LimitedString recognized as valid: ' + item);
+        }
       })
       .catch(error => {
-        t.ok(error.message, 'invalid LimitedString recognized');
+        t.fail(error);
+      });
+  }
+});
+
+test('GraphQLLimitedString too long (min = 3, max = 10, alphabet = "abc123")', t => {
+  const invalid = [
+    '01234567890',
+    'foobar23456'
+  ];
+
+  t.plan(invalid.length);
+
+  for (const item of invalid) {
+    const query = '{limitedStringAlphabet(item: "' + item + '")}';
+    graphql(schema, query)
+      .then(result => {
+        if(result.errors) {
+          result.errors = result.errors.map(formatError);
+          t.equal(result.errors[0].message, 'Expected type LimitedString3, found "' + item + '"; Query error: String too long', 'invalid LimitedString recognized');
+        }
+        else {
+          t.fail('invalid LimitedString recognized as valid: ' + item);
+        }
+      })
+      .catch(error => {
+        t.fail(error);
+      });
+  }
+});
+
+test('GraphQLLimitedString invalid chars (min = 3, max = 10, alphabet = "abc123")', t => {
+  const invalid = [
+    'dddd',
+    'abd1234',
+  ];
+
+  t.plan(invalid.length);
+
+  for (const item of invalid) {
+    const query = '{limitedStringAlphabet(item: "' + item + '")}';
+    graphql(schema, query)
+      .then(result => {
+        if(result.errors) {
+          result.errors = result.errors.map(formatError);
+          t.equal(result.errors[0].message, 'Expected type LimitedString3, found "' + item + '"; Query error: Invalid character found', 'invalid LimitedString recognized');
+        }
+        else {
+          t.fail('invalid LimitedString recognized as valid: ' + item);
+        }
+      })
+      .catch(error => {
+        t.fail(error);
       });
   }
 });
@@ -338,7 +464,7 @@ test('GraphQLPassword (alphaNumeric)', t => {
     const query = '{password(item: "' + item + '")}';
     graphql(schema, query)
       .then(result => {
-        if (result.data && result.data.password) {
+        if (result.data && result.data.password && !result.errors) {
           t.equal(result.data.password, item, 'valid Password recognized');
         }
         else {
@@ -353,11 +479,17 @@ test('GraphQLPassword (alphaNumeric)', t => {
   for (const item of invalid) {
     const query = '{password(item: "' + item + '")}';
     graphql(schema, query)
-      .then(() => {
-        t.fail('invalid Password recognized as valid: ' + item);
+      .then(result => {
+        if(result.errors) {
+          result.errors = result.errors.map(formatError);
+          t.equal(result.errors[0].message, 'Expected type Password, found "' + item + '"; Query error: String must contain at least one number and one letter', 'invalid LimitedString recognized');
+        }
+        else {
+          t.fail('invalid Password recognized as valid: ' + item);
+        }
       })
       .catch(error => {
-        t.ok(error.message, 'invalid Password recognized');
+        t.fail(error);
       });
   }
 });
@@ -393,7 +525,7 @@ test('GraphQLPassword (mixedCase)', t => {
     const query = '{passwordMixedCase(item: "' + item + '")}';
     graphql(schema, query)
       .then(result => {
-        if (result.data && result.data.passwordMixedCase) {
+        if (result.data && result.data.passwordMixedCase && !result.errors) {
           t.equal(result.data.passwordMixedCase, item, 'valid Password recognized');
         }
         else {
@@ -408,11 +540,17 @@ test('GraphQLPassword (mixedCase)', t => {
   for (const item of invalid) {
     const query = '{passwordMixedCase(item: "' + item + '")}';
     graphql(schema, query)
-      .then(() => {
-        t.fail('invalid Password recognized as valid: ' + item);
+      .then(result => {
+        if(result.errors) {
+          result.errors = result.errors.map(formatError);
+          t.equal(result.errors[0].message, 'Expected type Password2, found "' + item + '"; Query error: String must contain at least one uper and one lower case letter', 'invalid LimitedString recognized');
+        }
+        else {
+          t.fail('invalid Password recognized as valid: ' + item);
+        }
       })
       .catch(error => {
-        t.ok(error.message, 'invalid Password recognized');
+        t.fail(error);
       });
   }
 });
@@ -448,7 +586,7 @@ test('GraphQLPassword (specialChars)', t => {
     const query = '{passwordSpecialChars(item: "' + item + '")}';
     graphql(schema, query)
       .then(result => {
-        if (result.data && result.data.passwordSpecialChars) {
+        if (result.data && result.data.passwordSpecialChars && !result.errors) {
           t.equal(result.data.passwordSpecialChars, item, 'valid Password recognized');
         }
         else {
@@ -463,40 +601,36 @@ test('GraphQLPassword (specialChars)', t => {
   for (const item of invalid) {
     const query = '{passwordSpecialChars(item: "' + item + '")}';
     graphql(schema, query)
-      .then(() => {
-        t.fail('invalid Password recognized as valid: ' + item);
+      .then(result => {
+        if(result.errors) {
+          result.errors = result.errors.map(formatError);
+          t.equal(result.errors[0].message, 'Expected type Password3, found "' + item + '"; Query error: String must contain at least one special character', 'invalid LimitedString recognized');
+        }
+        else {
+          t.fail('invalid Password recognized as valid: ' + item);
+        }
       })
       .catch(error => {
-        t.ok(error.message, 'invalid Password recognized');
+        t.fail(error);
       });
   }
 });
 
-test('GraphQLPassword (all)', t => {
+test('GraphQLPassword too short (all)', t => {
   const valid = [
     'a1!B',
+    '!!A1b',
     'b2§A3!',
-    '!!A1b'
   ];
 
   const invalid = [
     '',
     'a',
-    'aa',
-    'dddd',
-    'aaaaabbbbb',
     '1',
-    '1234',
-    '1234567890',
+    'aa',
     '1a',
-    '123aaaa',
-    'foo23bar',
     'aÄ',
-    'a1*',
-    'a(c123',
-    '1%3Abc1231',
-    '33333#Cc22',
-    '!1'
+    '!1',
   ];
 
   t.plan(valid.length + invalid.length);
@@ -505,7 +639,7 @@ test('GraphQLPassword (all)', t => {
     const query = '{passwordAll(item: "' + item + '")}';
     graphql(schema, query)
       .then(result => {
-        if (result.data && result.data.passwordAll) {
+        if (result.data && result.data.passwordAll && !result.errors) {
           t.equal(result.data.passwordAll, item, 'valid Password recognized');
         }
         else {
@@ -520,11 +654,75 @@ test('GraphQLPassword (all)', t => {
   for (const item of invalid) {
     const query = '{passwordAll(item: "' + item + '")}';
     graphql(schema, query)
-      .then(() => {
-        t.fail('invalid Password recognized as valid: ' + item);
+      .then(result => {
+        if(result.errors) {
+          result.errors = result.errors.map(formatError);
+          t.equal(result.errors[0].message, 'Expected type Password4, found "' + item + '"; Query error: String not long enough', 'invalid LimitedString recognized');
+        }
+        else {
+          t.fail('invalid Password recognized as valid: ' + item);
+        }
       })
       .catch(error => {
-        t.ok(error.message, 'invalid Password recognized');
+        t.fail(error);
+      });
+  }
+});
+
+test('GraphQLPassword illegal char (all)', t => {
+  const invalid = [
+    'a1*',
+    'a(c123',
+    '1234',
+    'dddd',
+  ];
+
+  t.plan(invalid.length);
+
+  for (const item of invalid) {
+    const query = '{passwordAll(item: "' + item + '")}';
+    graphql(schema, query)
+      .then(result => {
+        if(result.errors) {
+          result.errors = result.errors.map(formatError);
+          t.equal(result.errors[0].message, 'Expected type Password4, found "' + item + '"; Query error: Invalid character found', 'invalid LimitedString recognized');
+        }
+        else {
+          t.fail('invalid Password recognized as valid: ' + item);
+        }
+      })
+      .catch(error => {
+        t.fail(error);
+      });
+  }
+});
+
+test('GraphQLPassword too long (all)', t => {
+  const invalid = [
+    '123aaaa',
+    'foo23bar',
+    '1234567890',
+    '1%3Abc1231',
+    '33333#Cc22',
+    'aaaaabbbbb',
+  ];
+
+  t.plan(invalid.length);
+
+  for (const item of invalid) {
+    const query = '{passwordAll(item: "' + item + '")}';
+    graphql(schema, query)
+      .then(result => {
+        if(result.errors) {
+          result.errors = result.errors.map(formatError);
+          t.equal(result.errors[0].message, 'Expected type Password4, found "' + item + '"; Query error: String too long', 'invalid LimitedString recognized');
+        }
+        else {
+          t.fail('invalid Password recognized as valid: ' + item);
+        }
+      })
+      .catch(error => {
+        t.fail(error);
       });
   }
 });
@@ -561,7 +759,7 @@ test('GraphQLDateTime', t => {
     const query = '{date(item: "' + item + '")}';
     graphql(schema, query)
       .then(result => {
-        if (result.data && result.data.date) {
+        if (result.data && result.data.date && !result.errors) {
           t.equal(result.data.date, item, 'valid DateTime recognized');
         }
         else {
@@ -576,15 +774,20 @@ test('GraphQLDateTime', t => {
   for (const item of invalid) {
     const query = '{date(item: "' + item + '")}';
     graphql(schema, query)
-      .then(() => {
-        t.fail('invalid DateTime recognized as valid: ' + item);
+      .then(result => {
+        if(result.errors) {
+          result.errors = result.errors.map(formatError);
+          t.equal(result.errors[0].message, 'Expected type DateTime, found "' + item + '"; Query error: String is not a valid date time string', 'invalid LimitedString recognized');
+        }
+        else {
+          t.fail('invalid DateTime recognized as valid: ' + item);
+        }
       })
       .catch(error => {
-        t.ok(error.message, 'invalid DateTime recognized');
+        t.fail(error);
       });
   }
 });
-
 
 test('GraphQLUUID', t => {
   const valid = [
@@ -621,7 +824,7 @@ test('GraphQLUUID', t => {
     const query = '{uuid(item: "' + item + '")}';
     graphql(schema, query)
       .then(result => {
-        if (result.data && result.data.uuid) {
+        if (result.data && result.data.uuid && !result.errors) {
           t.equal(result.data.uuid, item, 'valid UUID recognized');
         }
         else {
@@ -636,8 +839,14 @@ test('GraphQLUUID', t => {
   for (const item of invalid) {
     const query = '{uuid(item: "' + item + '")}';
     graphql(schema, query)
-      .then(() => {
-        t.fail('invalid UUID recognized as valid: ' + item);
+      .then(result => {
+        if(result.errors) {
+          result.errors = result.errors.map(formatError);
+          t.equal(result.errors[0].message, 'Expected type UUID, found "' + item + '"; Query error: Not a valid UUID', 'invalid LimitedString recognized');
+        }
+        else {
+          t.fail('invalid UUID recognized as valid: ' + item);
+        }
       })
       .catch(error => {
         t.equal(error.message, 'Query error: Not a valid UUID', 'invalid UUID recognized');
