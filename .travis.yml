@@ -1,8 +1,21 @@
 language: node_js
 node_js:
+  - "10"
+  - "9"
+  - "8"
   - "7.1"
   - "6.9"
   - "5.12"
   - "4.5"
 before_install:
-  - "npm install graphql"
+  - "npm install graphql@^${GRAPHQL_VERSION}"
+
+env:
+  - GRAPHQL_VERSION=v0.6
+  - GRAPHQL_VERSION=v0.7
+  - GRAPHQL_VERSION=v0.8
+  - GRAPHQL_VERSION=v0.9
+  - GRAPHQL_VERSION=v0.10
+  - GRAPHQL_VERSION=v0.11
+  - GRAPHQL_VERSION=v0.12
+  - GRAPHQL_VERSION=v0.13

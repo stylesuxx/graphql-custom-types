@@ -1,6 +1,36 @@
-import {graphql, formatError} from 'graphql';
+import {graphql, formatError, GraphQLError} from 'graphql';
 import test from 'tape';
 import {schema} from './schema';
+
+function executeQuery(schema, query, type, item) {
+  return graphql(schema, query)
+    .catch(error => {
+      // In some GraphQL versions before 0.12, the query was rejected with and error and after 0.12 the errors
+      // were inside the response `errors` attribute. This code will convert old GraphQL behavior
+      // into the new GraphQL 0.12 behavior so that the tests can assert error behavior across all
+      // versions
+      if (error instanceof GraphQLError) {
+        return {
+          errors: [error]
+        };
+      } else {
+        throw error;
+      }
+    })
+    .then(response => {
+      if (response.errors && response.errors.length) {
+        // In GraphQL versions before 0.12, the error message does not include the type details
+        // but in 0.12 and after the type details are included. This code will convert old GraphQL behavior
+        // into the new GraphQL 0.12 behavior so that the tests can assert error behavior across all
+        // versions
+        const message = response.errors[0].message;
+        if (!/Expected type/.test(message)) {
+          response.errors[0].message = 'Expected type ' + type + ', found "' + item + '"; ' + message
+        }
+      }
+      return response;
+    })
+}
 
 test('GraphQLEmail', t => {
   const invalid = [
@@ -39,7 +69,7 @@ test('GraphQLEmail', t => {
 
   for (const item of invalid) {
     const query = '{email(item: "' + item + '")}';
-    graphql(schema, query)
+    executeQuery(schema, query, 'Email', item)
       .then(result => {
         if(result.errors) {
           result.errors = result.errors.map(formatError);
@@ -56,7 +86,7 @@ test('GraphQLEmail', t => {
 
   for (const item of valid) {
     const query = '{email(item: "' + item + '")}';
-    graphql(schema, query)
+    executeQuery(schema, query, 'Email', item)
       .then(result => {
         if (result.data && result.data.email && !result.errors) {
           t.equal(result.data.email, item, 'valid address recognized');
@@ -154,7 +184,7 @@ test('GraphQLURL', t => {
 
   for (const item of valid) {
     const query = '{url(item: "' + item + '")}';
-    graphql(schema, query)
+    executeQuery(schema, query, 'URL', item)
       .then(result => {
         if (result.data && result.data.url && !result.errors) {
           t.equal(result.data.url, item, 'valid URL recognized');
@@ -170,7 +200,7 @@ test('GraphQLURL', t => {
 
   for (const item of invalid) {
     const query = '{url(item: "' + item + '")}';
-    graphql(schema, query)
+    executeQuery(schema, query, 'URL', item)
       .then(result => {
         if(result.errors) {
           result.errors = result.errors.map(formatError);
@@ -199,7 +229,7 @@ test('GraphQLLimitedString (default)', t => {
 
   for (const item of valid) {
     const query = '{limitedStringDefault(item: "' + item + '")}';
-    graphql(schema, query)
+    executeQuery(schema, query, 'LimitedString', item)
       .then(result => {
         if (result.data && result.data.limitedStringDefault && !result.errors) {
           t.equal(result.data.limitedStringDefault, item, 'valid LimitedString recognized');
@@ -215,7 +245,7 @@ test('GraphQLLimitedString (default)', t => {
 
   for (const item of invalid) {
     const query = '{limitedStringDefault(item: "' + item + '")}';
-    graphql(schema, query)
+    executeQuery(schema, query, 'LimitedString', item)
       .then(result => {
         if(result.errors) {
           result.errors = result.errors.map(formatError);
@@ -250,7 +280,7 @@ test('GraphQLLimitedString too short (min = 3, max = 10)', t => {
 
   for (const item of valid) {
     const query = '{limitedStringMinMax(item: "' + item + '")}';
-    graphql(schema, query)
+    executeQuery(schema, query, 'LimitedString2', item)
       .then(result => {
         if (result.data && result.data.limitedStringMinMax && !result.errors) {
           t.equal(result.data.limitedStringMinMax, item, 'valid LimitedString recognized');
@@ -266,7 +296,7 @@ test('GraphQLLimitedString too short (min = 3, max = 10)', t => {
 
   for (const item of invalid) {
     const query = '{limitedStringMinMax(item: "' + item + '")}';
-    graphql(schema, query)
+    executeQuery(schema, query, 'LimitedString2', item)
       .then(result => {
         if(result.errors) {
           result.errors = result.errors.map(formatError);
@@ -300,7 +330,7 @@ test('GraphQLLimitedString too long (min = 3, max = 10)', t => {
 
   for (const item of valid) {
     const query = '{limitedStringMinMax(item: "' + item + '")}';
-    graphql(schema, query)
+    executeQuery(schema, query, 'LimitedString2', item)
       .then(result => {
         if (result.data && result.data.limitedStringMinMax && !result.errors) {
           t.equal(result.data.limitedStringMinMax, item, 'valid LimitedString recognized');
@@ -316,7 +346,7 @@ test('GraphQLLimitedString too long (min = 3, max = 10)', t => {
 
   for (const item of invalid) {
     const query = '{limitedStringMinMax(item: "' + item + '")}';
-    graphql(schema, query)
+    executeQuery(schema, query, 'LimitedString2', item)
       .then(result => {
         if(result.errors) {
           result.errors = result.errors.map(formatError);
@@ -352,7 +382,7 @@ test('GraphQLLimitedString too short (min = 3, max = 10, alphabet = "abc123")', 
 
   for (const item of valid) {
     const query = '{limitedStringAlphabet(item: "' + item + '")}';
-    graphql(schema, query)
+    executeQuery(schema, query, 'LimitedString3', item)
       .then(result => {
         if (result.data && result.data.limitedStringAlphabet) {
           t.equal(result.data.limitedStringAlphabet, item, 'valid LimitedString recognized');
@@ -368,7 +398,7 @@ test('GraphQLLimitedString too short (min = 3, max = 10, alphabet = "abc123")', 
 
   for (const item of invalid) {
     const query = '{limitedStringAlphabet(item: "' + item + '")}';
-    graphql(schema, query)
+    executeQuery(schema, query, 'LimitedString3', item)
       .then(result => {
         if(result.errors) {
           result.errors = result.errors.map(formatError);
@@ -394,7 +424,7 @@ test('GraphQLLimitedString too long (min = 3, max = 10, alphabet = "abc123")', t
 
   for (const item of invalid) {
     const query = '{limitedStringAlphabet(item: "' + item + '")}';
-    graphql(schema, query)
+    executeQuery(schema, query, 'LimitedString3', item)
       .then(result => {
         if(result.errors) {
           result.errors = result.errors.map(formatError);
@@ -420,7 +450,7 @@ test('GraphQLLimitedString invalid chars (min = 3, max = 10, alphabet = "abc123"
 
   for (const item of invalid) {
     const query = '{limitedStringAlphabet(item: "' + item + '")}';
-    graphql(schema, query)
+    executeQuery(schema, query, 'LimitedString3', item)
       .then(result => {
         if(result.errors) {
           result.errors = result.errors.map(formatError);
@@ -462,7 +492,7 @@ test('GraphQLPassword (alphaNumeric)', t => {
 
   for (const item of valid) {
     const query = '{password(item: "' + item + '")}';
-    graphql(schema, query)
+    executeQuery(schema, query, 'Password', item)
       .then(result => {
         if (result.data && result.data.password && !result.errors) {
           t.equal(result.data.password, item, 'valid Password recognized');
@@ -478,7 +508,7 @@ test('GraphQLPassword (alphaNumeric)', t => {
 
   for (const item of invalid) {
     const query = '{password(item: "' + item + '")}';
-    graphql(schema, query)
+    executeQuery(schema, query, 'Password', item)
       .then(result => {
         if(result.errors) {
           result.errors = result.errors.map(formatError);
@@ -523,7 +553,7 @@ test('GraphQLPassword (mixedCase)', t => {
 
   for (const item of valid) {
     const query = '{passwordMixedCase(item: "' + item + '")}';
-    graphql(schema, query)
+    executeQuery(schema, query, 'Password2', item)
       .then(result => {
         if (result.data && result.data.passwordMixedCase && !result.errors) {
           t.equal(result.data.passwordMixedCase, item, 'valid Password recognized');
@@ -539,7 +569,7 @@ test('GraphQLPassword (mixedCase)', t => {
 
   for (const item of invalid) {
     const query = '{passwordMixedCase(item: "' + item + '")}';
-    graphql(schema, query)
+    executeQuery(schema, query, 'Password2', item)
       .then(result => {
         if(result.errors) {
           result.errors = result.errors.map(formatError);
@@ -584,7 +614,7 @@ test('GraphQLPassword (specialChars)', t => {
 
   for (const item of valid) {
     const query = '{passwordSpecialChars(item: "' + item + '")}';
-    graphql(schema, query)
+    executeQuery(schema, query, 'Password3', item)
       .then(result => {
         if (result.data && result.data.passwordSpecialChars && !result.errors) {
           t.equal(result.data.passwordSpecialChars, item, 'valid Password recognized');
@@ -600,7 +630,7 @@ test('GraphQLPassword (specialChars)', t => {
 
   for (const item of invalid) {
     const query = '{passwordSpecialChars(item: "' + item + '")}';
-    graphql(schema, query)
+    executeQuery(schema, query, 'Password3', item)
       .then(result => {
         if(result.errors) {
           result.errors = result.errors.map(formatError);
@@ -637,7 +667,7 @@ test('GraphQLPassword too short (all)', t => {
 
   for (const item of valid) {
     const query = '{passwordAll(item: "' + item + '")}';
-    graphql(schema, query)
+    executeQuery(schema, query, 'Password4', item)
       .then(result => {
         if (result.data && result.data.passwordAll && !result.errors) {
           t.equal(result.data.passwordAll, item, 'valid Password recognized');
@@ -653,7 +683,7 @@ test('GraphQLPassword too short (all)', t => {
 
   for (const item of invalid) {
     const query = '{passwordAll(item: "' + item + '")}';
-    graphql(schema, query)
+    executeQuery(schema, query, 'Password4', item)
       .then(result => {
         if(result.errors) {
           result.errors = result.errors.map(formatError);
@@ -681,7 +711,7 @@ test('GraphQLPassword illegal char (all)', t => {
 
   for (const item of invalid) {
     const query = '{passwordAll(item: "' + item + '")}';
-    graphql(schema, query)
+    executeQuery(schema, query, 'Password4', item)
       .then(result => {
         if(result.errors) {
           result.errors = result.errors.map(formatError);
@@ -711,7 +741,7 @@ test('GraphQLPassword too long (all)', t => {
 
   for (const item of invalid) {
     const query = '{passwordAll(item: "' + item + '")}';
-    graphql(schema, query)
+    executeQuery(schema, query, 'Password4', item)
       .then(result => {
         if(result.errors) {
           result.errors = result.errors.map(formatError);
@@ -757,7 +787,7 @@ test('GraphQLDateTime', t => {
 
   for (const item of valid) {
     const query = '{date(item: "' + item + '")}';
-    graphql(schema, query)
+    executeQuery(schema, query, 'DateTime', item)
       .then(result => {
         if (result.data && result.data.date && !result.errors) {
           t.equal(result.data.date, item, 'valid DateTime recognized');
@@ -773,7 +803,7 @@ test('GraphQLDateTime', t => {
 
   for (const item of invalid) {
     const query = '{date(item: "' + item + '")}';
-    graphql(schema, query)
+    executeQuery(schema, query, 'DateTime', item)
       .then(result => {
         if(result.errors) {
           result.errors = result.errors.map(formatError);
@@ -822,7 +852,7 @@ test('GraphQLUUID', t => {
 
   for (const item of valid) {
     const query = '{uuid(item: "' + item + '")}';
-    graphql(schema, query)
+    executeQuery(schema, query, 'UUID', item)
       .then(result => {
         if (result.data && result.data.uuid && !result.errors) {
           t.equal(result.data.uuid, item, 'valid UUID recognized');
@@ -838,7 +868,7 @@ test('GraphQLUUID', t => {
 
   for (const item of invalid) {
     const query = '{uuid(item: "' + item + '")}';
-    graphql(schema, query)
+    executeQuery(schema, query, 'UUID', item)
       .then(result => {
         if(result.errors) {
           result.errors = result.errors.map(formatError);
