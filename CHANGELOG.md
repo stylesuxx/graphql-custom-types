@@ -1,6 +1,9 @@
 ## [Unreleased]
 # Changelog
 
+## [1.5.0] - 2018-11-22
+- Updated graphql peer dependency
+
 ## [1.4.0] - 2018-05-20
 - Updated graphql peer dependency
 
