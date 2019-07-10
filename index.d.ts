@@ -31,7 +31,7 @@ declare namespace graphqlCustomTypes {
   const GraphQLUUID: GraphQLCustomScalarType;
 
   class GraphQLPassword extends GraphQLCustomScalarType {
-    constructor(min?: number, max?: number, alphabet?: boolean, complexity?: {
+    constructor(min?: number, max?: number, alphabet?: string, complexity?: {
       alphaNumeric?: boolean,
       mixedCase?: boolean,
       specialChars?: boolean,
