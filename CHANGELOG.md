@@ -1,5 +1,9 @@
-## [Unreleased]
 # Changelog
+## [Unreleased]
+
+## [1.5.1] - 2019-07-10
+### Fixed
+- TS Password definition
 
 ## [1.5.0] - 2018-11-22
 - Updated graphql peer dependency
