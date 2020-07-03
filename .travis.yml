@@ -10,10 +10,9 @@ node_js:
   - "8"
   - "7.1"
   - "6.9"
-  - "5.12"
-  - "4.5"
-before_script:
-  - "npm install graphql@^${GRAPHQL_VERSION}"
+
+install:
+  - npm install graphql@^${GRAPHQL_VERSION}
 
 env:
   - GRAPHQL_VERSION=v0.6
