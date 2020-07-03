@@ -9,7 +9,7 @@
   "scripts": {
     "clean": "rm -rf lib",
     "build": "npm run clean && ./node_modules/.bin/babel src --out-dir lib",
-    "test": "npm run build && ./node_modules/.bin/babel-node ./tests/index.js | tap-dot",
+    "test": "npm run build && ./node_modules/.bin/babel-node ./tests/index.js",
     "lint": "./node_modules/.bin/eslint src tests",
     "prepublish": "npm run build",
     "preversion": "npm test"
@@ -21,7 +21,6 @@
     "@babel/preset-env": "^7.10.4",
     "babel-eslint": "^10.1.0",
     "eslint": "^7.0.0",
-    "tap-dot": "^2.0.0",
     "tape": "^4.11.0"
   },
   "peerDependencies": {
