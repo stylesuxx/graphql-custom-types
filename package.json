@@ -2,7 +2,7 @@
   "name": "graphql-custom-types",
   "repository": "stylesuxx/graphql-custom-types",
   "version": "1.5.1",
-  "description": "Collection of custom graphql types like Email, URL, password and many more",
+  "description": "Collection of custom GraphQL types like Email, URL, password and many more",
   "author": "Chris Landa <stylesuxx@gmail.com>",
   "license": "MIT",
   "main": "lib/index.js",
@@ -15,27 +15,24 @@
     "preversion": "npm test"
   },
   "devDependencies": {
-    "babel-cli": "^6.26.0",
-    "babel-eslint": "^8.2.1",
-    "babel-preset-env": "^1.6.1",
-    "eslint": "^4.16.0",
-    "tape": "^4.2.2"
+    "@babel/cli": "^7.10.4",
+    "@babel/core": "^7.10.4",
+    "@babel/node": "^7.10.4",
+    "@babel/preset-env": "^7.10.4",
+    "babel-eslint": "^10.1.0",
+    "eslint": "^7.0.0",
+    "tape": "^4.11.0"
   },
   "peerDependencies": {
-    "graphql": "^0.6.0 || ^0.7.0 || ^0.8.0 || ^0.9.0 || ^0.10.0 || ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0"
+    "graphql": "^0.6.0 || ^0.7.0 || ^0.8.0 || ^0.9.0 || ^0.10.0 || ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0"
   },
   "keywords": [
-    "es6",
-    "es2015",
     "GraphQL",
     "express-graphql",
     "GraphQL types"
   ],
   "engines": {
-    "node": ">= 4.5.0"
+    "node": ">= 6.9"
   },
-  "types": "./index.d.ts",
-  "dependencies": {
-    "graphql": "^14.4.2"
-  }
+  "types": "./index.d.ts"
 }
