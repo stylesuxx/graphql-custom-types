@@ -13,6 +13,7 @@ node_js:
 
 install:
   - npm install graphql@^${GRAPHQL_VERSION}
+  - npm install
 
 env:
   - GRAPHQL_VERSION=v0.6
