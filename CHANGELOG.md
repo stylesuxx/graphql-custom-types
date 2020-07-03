@@ -1,6 +1,11 @@
 # Changelog
 ## [Unreleased]
 
+## [1.6.0] - 2020-07-03
+- Updated graphql peer dependency
+- Dropped support for NodeJs < 6.9
+- Improved .gitignore
+
 ## [1.5.1] - 2019-07-10
 ### Fixed
 - TS Password definition
