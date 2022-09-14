@@ -1,5 +1,6 @@
 # Changelog
 ## [Unreleased]
+- Updated graphql peer dependency to ^16
 
 ## [1.6.0] - 2020-07-03
 - Updated graphql peer dependency
